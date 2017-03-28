@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:jdbc="http://www.springframework.org/schema/jdbc" xmlns:amq="http://activemq.apache.org/schema/core"
+	xmlns:jms="http://www.springframework.org/schema/jms"
+	xsi:schemaLocation="
+      http://www.springframework.org/schema/beans 
+       http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+       http://www.springframework.org/schema/tx 
+       http://www.springframework.org/schema/tx/spring-tx-3.1.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context-3.1.xsd
+       http://www.springframework.org/schema/jms  
+        http://www.springframework.org/schema/jms/spring-jms-4.0.xsd  
+        http://activemq.apache.org/schema/core  
+        http://activemq.apache.org/schema/core/activemq-core-5.8.0.xsd">
+
+	<!-- 自动扫描acne包 ,将带有注解的类 纳入spring容器管理 -->
+	<context:component-scan base-package="com.acne"></context:component-scan>
+
+	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"
+		destroy-method="close">
+		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
+		<property name="url" value="jdbc:mysql://localhost:3306/acne" />
+		<property name="username" value="root" />
+		<property name="password" value="cisco" />
+		<!-- 初始化连接大小 -->
+		<property name="initialSize" value="0"></property>
+		<!-- 连接池最大数量 -->
+		<property name="maxActive" value="20"></property>
+		<!-- 连接池最大空闲 -->
+		<property name="maxIdle" value="20"></property>
+		<!-- 连接池最小空闲 -->
+		<property name="minIdle" value="1"></property>
+		<!-- 获取连接最大等待时间 -->
+		<property name="maxWait" value="60000"></property>
+	</bean>
+
+	<!-- mybatis文件配置，扫描所有mapper文件 -->
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource"></property>
+		<property name="mapperLocations" value="classpath:com/acne/mapper/*.xml"></property>
+		<property name="configLocation" value="classpath:mybatis-config.xml" />
+	</bean>
+
+	<!-- spring与mybatis整合配置，扫描所有dao -->
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="basePackage" value="com.acne.dao"></property>
+		<property name="sqlSessionFactory" ref="sqlSessionFactory"></property>
+	</bean>
+
+	<!-- 对dataSource 数据源进行事务管理 -->
+	<bean id="transactionManager"
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource"></property>
+	</bean>
+
+	<amq:connectionFactory id="amqConnectionFactory"
+		brokerURL="tcp://localhost:61616" />
+
+	<bean id="connectionFactory"
+		class="org.springframework.jms.connection.CachingConnectionFactory">
+		<constructor-arg ref="amqConnectionFactory" />
+	</bean>
+
+	<!-- Spring提供的JMS工具类，它可以进行消息发送、接收等 -->
+	<bean id="jmsTemplate" class="org.springframework.jms.core.JmsTemplate">
+		<!-- 这个connectionFactory对应的是我们定义的Spring提供的那个ConnectionFactory对象 -->
+		<property name="connectionFactory" ref="connectionFactory" />
+	</bean>
+
+	<!--这个是队列目的地，点对点的 -->
+	<bean id="queueDestination" class="org.apache.activemq.command.ActiveMQQueue">
+		<constructor-arg>
+			<value>queue</value>
+		</constructor-arg>
+	</bean>
+
+	<bean id="consumer" class="com.acne.consumer.AcneViewedArticleConsumer"></bean>
+
+	<!-- 消息监听容器 -->
+	<bean id="jmsContainer"
+		class="org.springframework.jms.listener.DefaultMessageListenerContainer">
+		<property name="connectionFactory" ref="connectionFactory" />
+		<property name="destination" ref="queueDestination" />
+		<property name="messageListener" ref="consumer" />
+	</bean>
+</beans>
