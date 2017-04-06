@@ -33,4 +33,9 @@ public class GoodsServiceImpl implements GoodsService {
 	public List<GoodsWithBLOBs> queryViewedGoods(Long userId, Integer size) {
 		return goodsMapper.queryViewedGoods(userId, size);
 	}
+
+	@Override
+	public List<GoodsWithBLOBs> queryPostedGoods(Long userId) {
+		return goodsMapper.queryPostedGoods(userId);
+	}
 }

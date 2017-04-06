@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.acne.dao.AntiAcneUserMapper;
 import com.acne.model.AntiAcneUser;
+import com.acne.model.Article;
 import com.acne.service.AntiUserService;
 
 @Service("antiUserService")
@@ -20,6 +21,12 @@ public class AntiUserServiceImpl implements AntiUserService {
 
 		List<AntiAcneUser> antiAcneUsers = antiAcneUserMapper.selectRecommands();
 		return antiAcneUsers;
+	}
+
+	@Override
+	public List<Article> queryPostedArticle(Long userId) {
+		
+		return null;
 	}
 
 }

@@ -34,6 +34,12 @@
 
 <body>
 
+	<div class="navbar navbar-inverse bg-inverse">
+		<div class="container d-flex justify-content-between">
+			<a href="/acne/" class="navbar-brand">SKIN FRESH</a>
+		</div>
+	</div>
+
 	<div class="blog-header">
 		<div class="container">
 			<h1 class="blog-title">
@@ -71,11 +77,11 @@
 				</div>
 				<div id="blog-content"></div>
 				<!-- /.blog-post -->
-
-				<nav class="blog-pagination"> <a
-					class="btn btn-outline-primary" href="#">赞一个</a> <a
-					class="btn btn-outline-secondary" href="#">踩一下</a> </nav>
-
+				
+				<div class="btn-group" style="margin-top: 30px; margin-bottom: 40px;" role="group" aria-label="acne option">
+  					<button id="upTimebtn" type="button" class="btn btn-default" data-toggle="tooltip" data-placement="top" title="赞  +1">赞一个</button>
+  					<button id="downTimebtn" type="button" class="btn btn-default" data-toggle="tooltip" data-placement="top" title="踩  +1">踩一下</button>
+				</div>
 			</div>
 			<!-- /.blog-main -->
 			<div class="col-sm-3 offset-sm-1 blog-sidebar">
@@ -87,7 +93,8 @@
  									String username = map.get("username").toString();
  									out.print(username);
  								}
- 							%></em> <br />
+ 							%></em> 
+ 							<br />
 						<%
 							if (map != null) {
 								String desc = map.get("description").toString();
@@ -156,35 +163,56 @@
 			var htm = converter.makeHtml(content);
 			$('#blog-content').html(content);
 			
-			<%
-				Object userIdObj = request.getSession().getAttribute("userId");
-				Object userTypeObj = request.getSession().getAttribute("userType");
-				String userId = userIdObj == null ? null : userIdObj.toString();
-				String userType = userTypeObj == null ? null : userTypeObj.toString();
-			%>
+			<%Object userIdObj = request.getSession().getAttribute("userId");
+			Object userTypeObj = request.getSession().getAttribute("userType");
+			String userId = userIdObj == null ? null : userIdObj.toString();
+			String userType = userTypeObj == null ? null : userTypeObj.toString();%>
 			var articleId = '<%=Long.parseLong(map.get("articleId").toString())%>';
 			var viewTimes = 1;
 			var userId = '<%=userId%>';
 			var userType = '<%=userType%>';
-			
-			$.get('/acne/anti/article_list', {articleId : articleId}, function(data, status){
-				
+
+			$.get('/acne/anti/article_list', {
+				articleId : articleId
+			}, function(data, status) {
+
 				var article_list_html = '';
-				$.each(data,function(index,obj) {
-					var title = obj.title.substr(0,10);
+				$.each(data, function(index, obj) {
+					var title = obj.title.substr(0, 10);
 					var articleId = obj.articleid;
-					article_list_html += '<li><a href="/acne/article?articleId='+articleId+'">'+title+'</a></li>';
+					article_list_html += '<li><a href="/acne/article?articleId=' + articleId + '">' + title + '</a></li>';
 				});
 				$('#article_list').html(article_list_html);
 			});
-			
+
 			$.post('/acne/article_hist', {
 				articleId : articleId,
 				viewTimes : 1,
 				userId : userId,
 				userType : userType
 			}, function(data, status) {
-				console.log(data);
+			});
+			
+			$('#upTimebtn').click(function(){
+				$.get('/acne/article/option?articleId='+articleId+'&upTimes=1', function(data, status){
+					if(status == 'success'){
+						$('#upTimebtn').tooltip('show');
+						setTimeout(function(){
+							$('#upTimebtn').tooltip('destroy');
+						}, 2500);
+					}
+				});
+			});
+			
+			$('#downTimebtn').click(function(){
+				$.get('/acne/article/option?articleId='+articleId+'&downTimes=1', function(data, status){
+					if(status == 'success'){
+						$('#downTimebtn').tooltip('show');
+						setTimeout(function(){
+							$('#downTimebtn').tooltip('destroy');
+						}, 2500);
+					}
+				});
 			});
 		});
 	</script>

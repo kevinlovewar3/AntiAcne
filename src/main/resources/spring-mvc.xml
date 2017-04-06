@@ -16,6 +16,7 @@
 	<mvc:resources location="res/images/**" mapping="/images/"/>
 	<mvc:resources location="res/css/**" mapping="/css/"/>
 	<mvc:resources location="res/js/**" mapping="/js/"/>
+	<mvc:resources location="res/img/**" mapping="/img/"/>
 	
 	<!-- 扫描controller（controller层注入） -->
 	<context:component-scan base-package="com.acne.controller" />
@@ -33,7 +34,7 @@
 		<property name="prefix" value="/WEB-INF/jsp/" />
 		<property name="suffix" value=".jsp" />
 	</bean>
-
+	
 	<!-- 配置springMVC处理上传文件的信息 -->
 	<bean id="multipartResolver"
 		class="org.springframework.web.multipart.commons.CommonsMultipartResolver">

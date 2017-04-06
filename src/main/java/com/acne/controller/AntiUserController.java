@@ -66,6 +66,12 @@ public class AntiUserController {
 		return antiJsonUsers.toString();
 	}
 
+	/**
+	 * 根据文章ID获取作者的其它文章
+	 * @param request
+	 * @param response
+	 * @return
+	 */
 	@RequestMapping(value = "anti/article_list", method = RequestMethod.GET, produces = {
 			"application/json; charset=UTF-8" })
 	@ResponseBody
@@ -73,7 +79,7 @@ public class AntiUserController {
 
 		String articleIdStr = request.getParameter("articleId");
 		Long articleId = Long.parseLong(articleIdStr);
-		List<Article> articles = articleService.queryArticleByAntiUser(articleId);
+		List<Article> articles = articleService.queryMoreArticleByArticleId(articleId);
 		JSONArray articlesJson = new JSONArray(articles);
 
 		logger.info("Get anti/article_list, result: {}", articlesJson);

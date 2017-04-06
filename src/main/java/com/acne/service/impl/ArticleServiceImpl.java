@@ -101,8 +101,13 @@ public class ArticleServiceImpl implements ArticleService {
 	}
 
 	@Override
-	public List<Article> queryArticleByAntiUser(Long articleId) {
-		return articleMapper.queryArticleByAntiUser(articleId);
+	public List<Article> queryMoreArticleByArticleId(Long articleId) {
+		return articleMapper.queryMoreArticleByArticleId(articleId);
+	}
+
+	@Override
+	public List<Article> queryPostedArticle(Long userId) {
+		return articleMapper.queryPostedArticle(userId);
 	}
 
 }

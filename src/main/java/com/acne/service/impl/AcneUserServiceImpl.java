@@ -1,5 +1,7 @@
 package com.acne.service.impl;
 
+import java.util.List;
+
 import javax.annotation.Resource;
 import javax.jms.Destination;
 import javax.jms.JMSException;
@@ -12,10 +14,17 @@ import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
 import org.springframework.stereotype.Service;
 
+import com.acne.dao.AcneUserMapper;
+import com.acne.model.AcneUser;
 import com.acne.service.AcneUserService;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 
 @Service("acneUserService")
 public class AcneUserServiceImpl implements AcneUserService {
+
+	@Autowired
+	AcneUserMapper acneUserMapper;
 
 	@Resource
 	JmsTemplate jmsTemplate;
@@ -42,6 +51,17 @@ public class AcneUserServiceImpl implements AcneUserService {
 	@Override
 	public void insertViewedGoods(Long goodsId, Long userId) {
 
+	}
+
+	@Override
+	public PageInfo<AcneUser> queryByPage(Integer pageNo, Integer pageSize) {
+		pageNo = pageNo == null ? 1 : pageNo;
+		pageSize = pageSize == null ? 9 : pageSize;
+
+		PageHelper.startPage(pageNo, pageSize);
+		List<AcneUser> list = acneUserMapper.selectAll();
+		PageInfo<AcneUser> pageInfo = new PageInfo<>(list);
+		return pageInfo;
 	}
 
 }

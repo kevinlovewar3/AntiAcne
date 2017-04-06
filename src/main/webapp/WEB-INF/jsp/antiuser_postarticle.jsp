@@ -13,6 +13,9 @@
 
 <!-- Bootstrap core CSS -->
 <link href="res/css/bootstrap.min.css" rel="stylesheet">
+<link href="res/css/bootstrap-markdown.min.css" rel="stylesheet">
+<link href="res/css/bootstrap-theme.min.css" rel="stylesheet">
+<link href="res/css/summernote.css" rel="stylesheet">
 
 </head>
 
@@ -20,22 +23,30 @@
 	<div class="container">
 		<a href="/acne/" class="navbar-brand">SKIN FRESH</a>
 		<ul class="nav nav-tabs">
-			<li role="presentation" class="active"><a href="#">个人首页</a></li>
+			<li role="presentation"><a href="/acne/antiuser">个人首页</a></li>
 			<li role="presentation"><a href="/acne/view_acne">浏览痘痘患者</a></li>
-			<li role="presentation"><a href="/acne/post_article">写点博客</a></li>
+			<li role="presentation" class="active"><a
+				href="/acne/post_article">写点博客</a></li>
 			<li role="presentation"><a href="/acne/post_goods">上传产品</a></li>
 		</ul>
 		<br />
 
-		<div class="row marketing">
-			<div class="col-lg-6">
-				<h4>发表的博文</h4>
-				<div id="article_hist"></div>
-			</div>
+		<div class="container">
+			<div class="row">
+				<!-- 
+				<form>
+					<input name="title" type="text" placeholder="Title?" />
+					<textarea id="article" name="content" data-provide="markdown"
+						rows="10"></textarea>
+					<label class="checkbox"> <input name="publish"
+						type="checkbox"> Publish
+					</label>
+					<hr />
+					<button type="submit" class="btn">Submit</button>
+				</form>
+				 -->
 
-			<div class="col-lg-6">
-				<h4>发布的产品</h4>
-				<div id="goods_hist"></div>
+				<div id="summernote"></div>
 			</div>
 		</div>
 
@@ -50,6 +61,10 @@
 
 	<script src="res/js/jquery-3.1.1.min.js"></script>
 	<script src="res/js/bootstrap.min.js"></script>
+	<script src="res/js/marked.min.js"></script>
+	<script src="res/js/bootstrap-markdown.js"></script>
+	<script src="res/js/bootstrap-markdown.zh.js"></script>
+	<script src="res/js/summernote.js"></script>
 
 	<!-- Bootstrap core JavaScript
     ================================================== -->
@@ -58,32 +73,11 @@
 	<script src="res/js/ie10-viewport-bug-workaround.js"></script>
 	<script charset="utf-8">
 		$(document).ready(function() {
-
-			$.get('/acne/posted_article', function(data, status) {
-				var article_list_html = '';
-				$.each(data, function(index, obj) {
-					var title = obj.title.substr(0, 10);
-					var articleId = obj.articleid;
-					var content = obj.content.substr(0, 50);
-					article_list_html += '<h4><a href="/acne/article?articleId=' + articleId + '">' + title + '</a></h4>';
-					article_list_html += '<p>' + content + '</p>';
-				});
-				$('#article_hist').html(article_list_html);
-			});
-			
-			$.get('/acne/posted_goods', function(data, status){
-				var goods_list_html = '';
-				$.each(data, function(index, obj){
-					var goodsName = obj.goodsName;
-					var desc = obj.description.substr(0, 10);
-					var uploadDate = obj.uploadDate;
-					
-					console.log(goodsName + desc + uploadDate);
-					
-					goods_list_html += '<h4>'+goodsName+'</h4>';
-					goods_list_html += '<p>'+desc+'</p>';
-				});
-				$('#goods_hist').html(goods_list_html);
+			$('#summernote').summernote({
+				height : 300,
+				minHeight : null,
+				maxHeight : null,
+				focus : true
 			});
 		});
 	</script>

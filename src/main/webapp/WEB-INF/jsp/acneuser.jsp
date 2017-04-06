@@ -13,6 +13,7 @@
 
 <!-- Bootstrap core CSS -->
 <link href="res/css/bootstrap.min.css" rel="stylesheet">
+<link href="res/css/bootstrap-select.min.css" rel="stylesheet">
 
 <!-- Custom styles for this template -->
 <link href="res/css/narrow-jumbotron.css" rel="stylesheet">
@@ -34,6 +35,7 @@
 			<li role="presentation"><a href="/acne/anti_recommands">推荐达人</a></li>
 		</ul>
 		<br />
+
 		<div class="jumbotron" style="text-align: left;">
 			<table style="width: 80%;">
 				<tr>
@@ -56,48 +58,43 @@
 				<div class="well">
 					<div class="row">
 						<div class="col-lg-6">
-							性别：
-							<div class="btn-group">
-								<button type="button" class="btn btn-default dropdown-toggle"
-									data-toggle="dropdown" aria-haspopup="true"
-									aria-expanded="false">
-									男 <span class="caret"></span>
-								</button>
-								<ul class="dropdown-menu">
-									<li><a href="#">男</a></li>
-									<li><a href="#">女</a></li>
-								</ul>
-							</div>
+							性别： <select id="sel-sex" class="selectpicker"
+								data-style="btn btn-default">
+								<option selected="selected">男</option>
+								<option>女</option>
+							</select>
 						</div>
 						<div class="col-lg-6" style="vertical-align: middle;">
 							<div class="input-group">
-								<span class="input-group-addon" id="span-time">患痘痘时长</span> <input
-									type="text" class="form-control" placeholder="3"
+								<span class="input-group-addon">患痘痘时长</span> <input
+									id="span-time" type="text" class="form-control" placeholder="3"
 									aria-describedby="span-time">
 							</div>
 						</div>
 					</div>
 					<div class="row">
 						<div class="col-lg-6">
-							肤质：
-							<div class="btn-group">
-								<button type="button" class="btn btn-default dropdown-toggle"
-									data-toggle="dropdown" aria-haspopup="true"
-									aria-expanded="false">
-									油性 <span class="caret"></span>
-								</button>
-								<ul class="dropdown-menu">
-									<li><a href="#">油性</a></li>
-									<li><a href="#">痘痘肌</a></li>
-									<li><a href="#">缺水肌</a></li>
-								</ul>
-							</div>
+							肤质： <select id="sel-skintype" class="selectpicker"
+								data-style="btn btn-default">
+								<option selected="selected">缺水</option>
+								<option>油性</option>
+								<option>痘痘肌</option>
+							</select>
 						</div>
 						<div class="col-lg-6" style="vertical-align: middle;">
 							<div class="input-group">
-								<span class="input-group-addon" id="age">年龄</span> <input
+								<span class="input-group-addon">年龄</span> <input id="age"
 									type="number" class="form-control" placeholder="25"
 									aria-describedby="age">
+							</div>
+						</div>
+					</div>
+
+					<div class="row">
+						<div class="col-lg-12"
+							style="text-align: center; padding-top: 5px;">
+							<div class="btn-group" role="group" aria-label="">
+								<button id="btn-save" type="button" class="btn btn-default">保存</button>
 							</div>
 						</div>
 					</div>
@@ -107,8 +104,8 @@
 
 		<div class="row marketing">
 			<div class="col-lg-6">
-			<h4>浏览过的博文</h4>
-			<div id="article_hist"></div>
+				<h4>浏览过的博文</h4>
+				<div id="article_hist"></div>
 			</div>
 
 			<div class="col-lg-6">
@@ -133,6 +130,7 @@
 			</div>
 		</div>
 
+
 		<footer class="footer">
 		<p>&copy; Company 2017</p>
 		</footer>
@@ -142,6 +140,7 @@
 
 	<script src="res/js/jquery-3.1.1.min.js"></script>
 	<script src="res/js/bootstrap.min.js"></script>
+	<script src="res/js/bootstrap-select.min.js"></script>
 
 	<!-- Bootstrap core JavaScript
     ================================================== -->
@@ -151,22 +150,25 @@
 	<script charset="utf-8">
 		$(document).ready(function() {
 
-			var userId =<%=userId%>;
+			var userId =
+	<%=userId%>
+		;
 
 			$.get('/acne/anti/recommands', function(data, status) {
+				console.log(data);
 			});
 
 			$.get('/acne/article_hist', {
 				userId : userId
 			}, function(data, status) {
-				
+
 				var article_list_html = '';
-				$.each(data,function(index,obj) {
-					var title = obj.title.substr(0,10);
+				$.each(data, function(index, obj) {
+					var title = obj.title.substr(0, 10);
 					var articleId = obj.articleid;
 					var content = obj.content.substr(0, 50);
-					article_list_html += '<h4><a href="/acne/article?articleId='+articleId+'">'+title+'</a></h4>';
-					article_list_html += '<p>'+content+'</p>';
+					article_list_html += '<h4><a href="/acne/article?articleId=' + articleId + '">' + title + '</a></h4>';
+					article_list_html += '<p>' + content + '</p>';
 				});
 				$('#article_hist').html(article_list_html);
 			});
@@ -174,6 +176,22 @@
 			$.get('/acne/goods_hist', {
 				userId : userId
 			}, function(data, status) {
+				console.log(data);
+				console.log(status);
+			});
+
+			$('#btn-save').click(function() {
+				var sex = $('#sel-sex').val();
+				var skinType = $('#sel-skintype').val();
+				var age = $('#age').val();
+				var spanTime = $('#span-time').val();
+
+				$.post('/acne/complete', {sex:sex, skinType:skinType, age:age, spanTime:spanTime}, function(data, status) {
+					
+					if(status == 'success'){
+						$('#collapseExample').collapse('hide');
+					}
+				});
 			});
 		});
 	</script>

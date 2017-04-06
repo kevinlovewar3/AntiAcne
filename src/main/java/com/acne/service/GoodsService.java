@@ -10,4 +10,6 @@ public interface GoodsService {
 	PageInfo<GoodsWithBLOBs> queryByPage(Integer pageNo, Integer pageSize);
 
 	List<GoodsWithBLOBs> queryViewedGoods(Long userId, Integer size);
+	
+	List<GoodsWithBLOBs> queryPostedGoods(Long userId);
 }

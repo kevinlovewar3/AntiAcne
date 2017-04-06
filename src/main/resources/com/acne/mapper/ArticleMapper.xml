@@ -31,7 +31,15 @@
 		content
 	</sql>
 
-	<select id="queryArticleByAntiUser" parameterType="java.lang.Long"
+	<select id="queryPostedArticle" parameterType="java.lang.Long"
+		resultMap="ResultMapWithBLOBs">
+		select t_article.* from t_article inner join t_anti_article
+		on t_article.articleId = t_anti_article.articleId where
+		t_anti_article.antiUserId = #{userId, jdbcType=BIGINT} order by
+		publishDate desc limit 5;
+	</select>
+
+	<select id="queryMoreArticleByArticleId" parameterType="java.lang.Long"
 		resultMap="ResultMapWithBLOBs">
 		select t_article.articleId, t_article.title
 		from t_article

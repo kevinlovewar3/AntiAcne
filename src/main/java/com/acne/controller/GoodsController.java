@@ -56,6 +56,25 @@ public class GoodsController {
 	}
 
 	/**
+	 * 获取祛痘达人发布的产品
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping(value = "posted_goods", method = RequestMethod.GET, produces = {
+			"application/json; charset=UTF-8" })
+	@ResponseBody
+	public String postedGoods(HttpServletRequest request, HttpServletResponse response) {
+
+		String userIdStr = request.getSession().getAttribute("userId").toString();
+		Long userId = Long.parseLong(userIdStr);
+		List<GoodsWithBLOBs> goodsWithBLOBs = goodsService.queryPostedGoods(userId);
+		logger.info("/acne/posted_goods, GoodsWithBLOBs: {}", goodsWithBLOBs);
+		JSONArray array = new JSONArray(goodsWithBLOBs);
+		return array.toString();
+	}
+
+	/**
 	 * 获取产品浏览记录
 	 * 
 	 * @param request

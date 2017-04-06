@@ -71,7 +71,7 @@ public class ArticleController {
 	}
 
 	/**
-	 * 获取推荐博文
+	 * 获取今日推荐博文
 	 * 
 	 * @param request
 	 * @param response
@@ -100,6 +100,37 @@ public class ArticleController {
 		// TODO 提交博文
 		ModelAndView modelAndView = new ModelAndView("index");
 		return modelAndView;
+	}
+
+	/**
+	 * 祛痘达人 编写博文
+	 * 
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping(value = "post_article", method = RequestMethod.GET)
+	@ResponseBody
+	public ModelAndView postArticle(HttpServletRequest request, HttpServletResponse response) {
+		ModelAndView mView = new ModelAndView("antiuser_postarticle");
+		return mView;
+	}
+
+	/**
+	 * 
+	 */
+	@RequestMapping(value = "posted_article", method = RequestMethod.GET, produces = {
+			"application/json; charset=UTF-8" })
+	@ResponseBody
+	public String postedArticle(HttpServletRequest request, HttpServletResponse response) {
+		String userIdStr = request.getSession().getAttribute("userId").toString();
+		Long userId = Long.parseLong(userIdStr);
+		List<Article> articles = articleService.queryPostedArticle(userId);
+		JSONArray array = new JSONArray(articles);
+
+		logger.info("Total num: PageInfo<Article>: {}", articles);
+
+		return array.toString();
 	}
 
 	/**
@@ -146,6 +177,20 @@ public class ArticleController {
 		logger.info("Viewed articles: {}", articles);
 		JSONArray array = new JSONArray(articles);
 		return array.toString();
+	}
+
+	/**
+	 * 赞一个 踩一下
+	 * 
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping(value = "article/option", method = RequestMethod.GET, produces = {
+			"application/json; charset=UTF-8" })
+	@ResponseBody
+	public String articleOption(HttpServletRequest request, HttpServletResponse response) {
+		return postArticleHist(request, response);
 	}
 
 	/**

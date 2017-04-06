@@ -30,6 +30,15 @@
 		t_goods.goodsPicture, t_goods.description
 	</sql>
 
+	<select id="queryPostedGoods" parameterType="java.lang.Long"
+		resultMap="ResultMapWithBLOBs">
+		select t_goods.* from t_goods inner join t_anti_goods on
+		t_goods.goodsId =
+		t_anti_goods.goodsId where t_anti_goods.antiUserId =
+		#{userId, jdbcType=BIGINT} order by
+		uploadDate desc limit 5;
+	</select>
+
 	<select id="queryViewedGoods" resultMap="ResultMapWithBLOBs">
 		select
 		<include refid="Base_Column_List" />

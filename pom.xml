@@ -216,6 +216,13 @@
 			<scope>provided</scope>
 		</dependency>
 
+		<dependency>
+			<groupId>taobao</groupId>
+			<artifactId>taobao</artifactId>
+			<version>1.0</version>
+		</dependency>
+
+
 		<!-- mybatis分页插件依赖 -->
 		<dependency>
 			<groupId>com.github.pagehelper</groupId>

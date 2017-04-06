@@ -9,4 +9,9 @@ public interface AuthService {
 
 	public AntiAcneUser selectAntiByPhone(String phone, String password);
 
+	public AcneUser isAcneUserExist(String phone);
+
+	public AntiAcneUser isAntiAcneUser(String phone);
+
+	public void updateByPrimaryKeySelective(AcneUser acneUser);
 }
