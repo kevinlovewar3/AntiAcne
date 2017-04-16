@@ -128,6 +128,7 @@
 			<div class="col-lg-12">
 				<h4>推荐达人</h4>
 			</div>
+			<div id="anti_recommand" class="row"></div>
 		</div>
 
 
@@ -155,7 +156,21 @@
 		;
 
 			$.get('/acne/anti/recommands', function(data, status) {
-				console.log(data);
+				if (status == 'success') {
+					var recommand_html = '';
+					data.forEach(function(value, index, arr){
+						var userId = value.userid;
+						var avatar = value.avatar;
+						var username = value.username;
+						var desc = value.description;
+
+						recommand_html += '<div class="col-xs-6 col-md-3">';
+						recommand_html += '<a href="/acne/anti/userId='+userId+'" class="thumbnail">';
+						recommand_html += '<img src="'+avatar+'", alt="'+desc+'">';
+						recommand_html += '</a></div>';
+					});
+					$('#anti_recommand').html(recommand_html);
+				}
 			});
 
 			$.get('/acne/article_hist', {
@@ -176,8 +191,6 @@
 			$.get('/acne/goods_hist', {
 				userId : userId
 			}, function(data, status) {
-				console.log(data);
-				console.log(status);
 			});
 
 			$('#btn-save').click(function() {
@@ -186,9 +199,14 @@
 				var age = $('#age').val();
 				var spanTime = $('#span-time').val();
 
-				$.post('/acne/complete', {sex:sex, skinType:skinType, age:age, spanTime:spanTime}, function(data, status) {
-					
-					if(status == 'success'){
+				$.post('/acne/complete', {
+					sex : sex,
+					skinType : skinType,
+					age : age,
+					spanTime : spanTime
+				}, function(data, status) {
+
+					if (status == 'success') {
 						$('#collapseExample').collapse('hide');
 					}
 				});

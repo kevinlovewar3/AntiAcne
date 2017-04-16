@@ -66,7 +66,7 @@
 					<td style="width: 50%">
 						<ul class="nav nav-pills">
 							<li role="presentation" class="active"><a href="#">精选博文</a></li>
-							<li role="presentation"><a href="/acne/goods">推荐产品</a></li>
+							<li role="presentation"><a href="/acne/goods-self">推荐产品</a></li>
 							<%
 								Object userType = request.getSession().getAttribute("userType");
 								if (userType != null) {

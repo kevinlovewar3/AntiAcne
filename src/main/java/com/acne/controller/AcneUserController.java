@@ -2,7 +2,6 @@ package com.acne.controller;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
@@ -22,7 +21,9 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.acne.model.AcneImage;
 import com.acne.model.AcneUser;
+import com.acne.service.AcneImageService;
 import com.acne.service.AcneUserService;
 import com.github.pagehelper.PageInfo;
 
@@ -34,6 +35,9 @@ public class AcneUserController {
 
 	@Autowired
 	AcneUserService acneUserService;
+
+	@Autowired
+	AcneImageService acneImageService;
 
 	/**
 	 * 痘痘患者首页
@@ -50,7 +54,7 @@ public class AcneUserController {
 	}
 
 	/**
-	 * 痘痘患者上传照片
+	 * 痘痘患者上传照片界面
 	 * 
 	 * @param request
 	 * @param response
@@ -60,6 +64,10 @@ public class AcneUserController {
 	@ResponseBody
 	public ModelAndView postImages(HttpServletRequest request, HttpServletResponse response) {
 		ModelAndView mView = new ModelAndView("acneuser_images");
+		Object userIdObj = request.getSession().getAttribute("userId");
+		Long userId = Long.parseLong(userIdObj.toString());
+		List<AcneImage> acneImages = acneImageService.getImages(userId);
+		mView.addObject("acneImages", acneImages);
 		return mView;
 	}
 

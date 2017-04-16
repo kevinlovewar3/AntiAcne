@@ -47,6 +47,25 @@ public class AntiUserController {
 	}
 
 	/**
+	 * 推荐治痘达人界面
+	 * 
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping(value = "anti_recommands", method = RequestMethod.GET)
+	@ResponseBody
+	public ModelAndView antiRecommands(HttpServletRequest request, HttpServletResponse response) {
+		ModelAndView mView = new ModelAndView("acneuser_recommand");
+		List<AntiAcneUser> antiAcneUsers = antiUserService.queryRecommandsAntiUser();
+
+		logger.info("Get anti/recommands, result: {}", antiAcneUsers);
+		
+		mView.addObject("antiUser", antiAcneUsers);
+		return mView;
+	}
+
+	/**
 	 * 为患者推荐的治痘达人
 	 * 
 	 * @param request
@@ -68,6 +87,7 @@ public class AntiUserController {
 
 	/**
 	 * 根据文章ID获取作者的其它文章
+	 * 
 	 * @param request
 	 * @param response
 	 * @return

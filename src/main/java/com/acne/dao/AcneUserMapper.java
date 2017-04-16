@@ -41,8 +41,7 @@ public interface AcneUserMapper {
 	AcneUser selectByPrimaryKey(Long userid);
 
 	AcneUser selectByPhone(Map<String, Object> map);
-	
-	
+
 	AcneUser isAcneUserExist(String phone);
 
 	/**

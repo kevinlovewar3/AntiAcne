@@ -28,6 +28,14 @@ public class GoodsController {
 
 	@Autowired
 	GoodsService goodsService;
+	
+	@RequestMapping(value = "goods-self", method = RequestMethod.GET)
+	@ResponseBody
+	public ModelAndView getSelfGoods(HttpServletRequest request, HttpServletResponse response) {
+		ModelAndView mView = new ModelAndView("goods_temp");
+		
+		return mView;
+	}
 
 	/**
 	 * 获取产品列表
