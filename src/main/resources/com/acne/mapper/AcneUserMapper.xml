@@ -26,6 +26,10 @@
 		age, skinType,
 		acneTimeSpan, level, available
 	</sql>
+	
+	<select id="queryAvatarByUserId" parameterType="java.lang.Long" resultType="java.lang.String">
+		select avatar from t_acne_user where userId = #{userId, jdbcType=BIGINT}
+	</select>
 
 	<select id="selectAll" resultMap="BaseResultMap">
 		select * from t_acne_user where
@@ -43,7 +47,10 @@
 	</select>
 	<select id="isAcneUserExist" resultMap="BaseResultMap"
 		parameterType="java.lang.String">
-		select t_acne_user.* from t_acne_user
+		select t_acne_user.* from t_acne_user where t_acne_user.phone = #{phone, jdbcType=VARCHAR}
+	</select>
+	<select id="queryAcneUserNum" resultType="java.lang.Integer">
+		select count(*) from t_acne_user where available = 1
 	</select>
 
 	<select id="selectByPhone" resultMap="BaseResultMap"

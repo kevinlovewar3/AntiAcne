@@ -64,4 +64,19 @@ public class AcneUserServiceImpl implements AcneUserService {
 		return pageInfo;
 	}
 
+	@Override
+	public String queryAvatarByUserId(Long userId) {
+		return acneUserMapper.queryAvatarByUserId(userId);
+	}
+
+	@Override
+	public Integer queryAcneUserNum() {
+		return acneUserMapper.queryAcneUserNum();
+	}
+
+	@Override
+	public AcneUser queryAcneUserByUserId(Long userId) {
+		return acneUserMapper.selectByPrimaryKey(userId);
+	}
+
 }

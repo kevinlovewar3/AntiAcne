@@ -32,25 +32,20 @@
 		<br />
 
 		<div class="container">
+			<div class="row" style="margin-bottom: 20px;">
+				<div class="input-group input-group-md">
+					<span class="input-group-addon" id="sizing-addon1">标题</span> <input
+						id="title" type="text" class="form-control" placeholder="标题"
+						aria-describedby="sizing-addon1">
+				</div>
+			</div>
 			<div class="row">
-				<!-- 
-				<form>
-					<input name="title" type="text" placeholder="Title?" />
-					<textarea id="article" name="content" data-provide="markdown"
-						rows="10"></textarea>
-					<label class="checkbox"> <input name="publish"
-						type="checkbox"> Publish
-					</label>
-					<hr />
-					<button type="submit" class="btn">Submit</button>
-				</form>
-				 -->
-
 				<div id="summernote"></div>
+				<div>
+					<button id="upload" class="btn btn-default">保存</button>
+				</div>
 			</div>
 		</div>
-
-
 
 		<footer class="footer">
 		<p>&copy; Company 2017</p>
@@ -74,10 +69,26 @@
 	<script charset="utf-8">
 		$(document).ready(function() {
 			$('#summernote').summernote({
-				height : 300,
+				height : 700,
 				minHeight : null,
 				maxHeight : null,
 				focus : true
+			});
+
+			$('#upload').click(function() {
+				var title = $('#title').val();
+				var textarea = $('#summernote').summernote('code');
+				var json = {}
+				json.title = title;
+				json.blog = textarea;
+				$.ajax({
+					type : 'POST',
+					url : '/acne/article',
+					data : json,
+					success : function(data) {
+
+					}
+				});
 			});
 		});
 	</script>

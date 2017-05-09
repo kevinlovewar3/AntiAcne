@@ -1,7 +1,7 @@
 <%@page import="org.json.JSONObject"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!DOCTYPE html>
 <html lang="zh">
 <head>
 <meta name="viewport"
@@ -13,10 +13,10 @@
 <title>用户登录</title>
 
 <!-- Bootstrap core CSS -->
-<link href="res/css/bootstrap.min.css" rel="stylesheet">
+<link href="res/css/bootstrap.min.css" type="text/css" rel="stylesheet">
 
 <!-- Custom styles for this template -->
-<link href="res/css/signin.css" rel="stylesheet">
+<link href="res/css/signin.css" type="text/css" rel="stylesheet">
 </head>
 
 <body>
@@ -38,16 +38,8 @@
 					<p>
 					<div class="input-group">
 						<span class="input-group-addon" id="phone_number">手机号码：</span> <input
-							type="number" class="form-control" placeholder="+86-"
-							aria-describedby="phone_number">
-					</div>
-					</p>
-
-					<p>
-					<div class="input-group">
-						<span class="input-group-addon" id="dynamic_password">动态密码：</span>
-						<input type="number" class="form-control" placeholder="123456"
-							aria-describedby="dynamic_password">
+							id="register-phone" type="number" class="form-control"
+							placeholder="+86-" aria-describedby="phone_number">
 					</div>
 					</p>
 
@@ -64,20 +56,25 @@
 							aria-describedby="conform_password">
 					</div>
 					</p>
-
 					您是
 					<div>
 						<label class="radio-inline"> <input type="radio"
-							checked="checked" name="userType" id="acne_user"
+							checked="checked" name="userType0" id="acne_user"
 							value="acne_user">痘痘患者
 						</label> <label class="radio-inline"> <input type="radio"
-							name="userType" id="anti_user" value="anti_user">治痘达人
+							name="userType0" id="anti_user" value="anti_user">治痘达人
 						</label>
 					</div>
 				</div>
 				<div class="modal-footer">
+					<!--
+					<div id="count_down" style="display: block;"></div>
+					-->
 					<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-					<button type="button" class="btn btn-primary">发送动态验证码</button>
+					<!--
+					<button id="send_code_btn" data-loading-text="请等待..." autocomplete="off" type="button" class="btn btn-primary">发送动态验证码</button>
+					-->
+					<button id="register_btn" type="button" class="btn btn-primary">注册</button>
 				</div>
 			</div>
 		</div>
@@ -103,10 +100,16 @@
 			String phone = resultJsonObj.getString("phone");
 			Long userId = resultJsonObj.getLong("userid");
 			int available = resultJsonObj.getInt("available");
+			String avatar = resultJsonObj.getString("avatar");
+			String registerDate = resultJsonObj.getString("registerdate");
+			String desc = resultJsonObj.getString("description");
 			request.getSession().setAttribute("userId", userId);
 			request.getSession().setAttribute("username", username);
 			request.getSession().setAttribute("phone", phone);
+			request.getSession().setAttribute("avatar", avatar);
+			request.getSession().setAttribute("registerDate", registerDate);
 			request.getSession().setAttribute("available", available);
+			request.getSession().setAttribute("description", desc);
 
 			response.sendRedirect("/acne");
 		} else {
@@ -114,48 +117,129 @@
 			request.getSession().removeAttribute("username");
 			request.getSession().removeAttribute("phone");
 			request.getSession().removeAttribute("available");
+			request.getSession().removeAttribute("avatar");
+			request.getSession().removeAttribute("registerDate");
+			request.getSession().removeAttribute("description");
 		}
 	%>
 
 	<div class="container">
+		<script>
+			function remember() {
+				
+				if (document.getElementById('remember-me').checked) {
+					
+					localStorage.remember = 'checked';
+					localStorage.phone = document.getElementById('inputPhone').value;
+					localStorage.password = document.getElementById('inputPassword').value;
+					var radio = document.getElementsByName('userType');
+					for (i = 0; i < radio.length; i++) {
+						if (radio[i].checked) {
+							localStorage.userType = radio[i].value;
+						}
+					}
+				} else {
+					localStorage.remember = 'unchecked';
+				}
+			}
+		</script>
 
-		<form class="form-signin" method="post" action="#"
-			accept-charset="UTF-8">
+		<form class="form-signin" method="post" action="#" accept-charset="UTF-8">
 			<h2 class="form-signin-heading">请输入手机号码登录</h2>
-			<label for="inputPhone" class="sr-only">手机号码</label> <input
-				type="text" id="inputPhone" class="form-control" name="phone"
-				placeholder="手机号码" required autofocus> <label
-				for="inputPassword" class="sr-only">密码</label> <input
-				type="password" id="inputPassword" class="form-control"
-				name="password" placeholder="密码" required>
+			<label for="inputPhone" class="sr-only">手机号码</label> 
+			<input type="text" id="inputPhone" class="form-control" name="username" placeholder="手机号码" required autofocus> 
+			<label for="inputPassword" class="sr-only">密码</label> 
+			<input type="password" id="inputPassword" class="form-control" name="password" placeholder="密码" required>
 			<div>
-				<label class="radio-inline"> <input type="radio"
-					checked="checked" name="userType" id="acne_user" value="acne_user">痘痘患者
-				</label> <label class="radio-inline"> <input type="radio"
-					name="userType" id="anti_user" value="anti_user">治痘达人
+				<label class="radio-inline"> 
+					<input type="radio" checked="checked" name="userType" id="acne_user" value="acne_user">痘痘患者
+				</label> 
+				<label class="radio-inline"> 
+					<input type="radio" name="userType" id="anti_user" value="anti_user">治痘达人
 				</label>
 			</div>
-			<br /> <label> <input type="checkbox" value="remember-me">
-				记住我
+			<br /> 
+			<label> 
+				<input id="remember-me" type="checkbox" value="true" name="rememberMe" onclick="remember();"> 记住我
 			</label>
 			<button class="btn btn-lg btn-primary btn-block" type="submit">登录</button>
-
-			<button id="btn_register" class="btn btn-lg btn-default btn-block"
-				type="button" data-toggle="modal" data-target="#myModal">一键注册</button>
+			<button id="btn_register" class="btn btn-lg btn-default btn-block" type="button" data-toggle="modal" data-target="#myModal">一键注册</button>
 		</form>
-
 
 	</div>
 	<!-- /container -->
 
 	<script src="res/js/jquery-3.1.1.min.js"></script>
 	<script src="res/js/bootstrap.min.js"></script>
-	<script>
+	<script charset='utf-8'>
 		$(document).ready(function() {
+
+			$('#register_btn').click(function() {
+
+				var phone = $('#register-phone').val();
+				var password = $('#register-password').val();
+				var userType = $("#input[name='userType0'][checked]").val();
+
+				$.post('/acne/register_no_verify', {
+					phone : phone,
+					password : password,
+					userType : userType
+				}, function(data) {
+					console.log(data);
+				});
+			});
+
+			$('#send_code_btn').click(function() {
+				$('#send_code_btn').button('loading');
+				$('#count_down').css("display", "block");
+
+				var phone = $('#register-phone').val();
+				var userType = $("input[name='userType0'][checked]").val();
+
+				console.log(phone + userType);
+
+				$.get('/acne/send_code', {
+					phone : phone,
+					userType : userType
+				}, function(data) {
+					console.log(data);
+				});
+
+				var count = 60;
+				var interval = setInterval(function() {
+					if (count == 1) {
+						clearInterval(interval);
+						$('#send_code_btn').button('reset');
+					}
+					count--;
+					$('#count_down').html('<label>' + count + ' s</label>');
+				}, 1000)
+			});
+
 			$('#myModal').on('shown.bs.modal', function() {
 				$('#myModalLabel').focus();
 			})
 
+			var remember = localStorage.getItem("remember");
+			if (remember == 'checked') {
+				document.getElementById('remember-me').checked = true;
+				var userType = localStorage.getItem("userType");
+				var radio = document.getElementsByName('userType');
+				for (i = 0; i < radio.length; i++) {
+					if (radio[i].value == userType) {
+						radio[i].checked = true;
+					}
+				}
+				var phone = localStorage.getItem("phone");
+				var password = localStorage.getItem("password");
+				if (phone != null && password != null) {
+					document.getElementById('inputPhone').value = phone;
+					document.getElementById('inputPassword').value = password;
+				}
+			} else {
+				document.getElementById('inputPhone').value = '';
+				document.getElementById('inputPassword').value = '';
+			}
 		});
 	</script>
 

@@ -29,4 +29,9 @@ public class AntiUserServiceImpl implements AntiUserService {
 		return null;
 	}
 
+	@Override
+	public Integer queryAntiUserNum() {
+		return antiAcneUserMapper.queryAntiUserNum();
+	}
+
 }

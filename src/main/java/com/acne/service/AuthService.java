@@ -14,4 +14,8 @@ public interface AuthService {
 	public AntiAcneUser isAntiAcneUser(String phone);
 
 	public void updateByPrimaryKeySelective(AcneUser acneUser);
+	
+	public void registerAcneUser(AcneUser acneUser);
+	
+	public void registerAntiUser(AntiAcneUser antiAcneUser);
 }

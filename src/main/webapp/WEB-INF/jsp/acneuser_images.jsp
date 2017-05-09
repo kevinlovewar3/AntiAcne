@@ -1,9 +1,12 @@
+<%@page import="java.text.SimpleDateFormat"%>
+<%@page import="java.util.Date"%>
 <%@page import="java.util.ArrayList"%>
 <%@page import="com.acne.model.AcneImage"%>
 <%@page import="java.util.List"%>
+<%@page import="java.text.SimpleDateFormat"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!DOCTYPE html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta name="viewport"
@@ -19,7 +22,54 @@
 
 <!-- Custom styles for this template -->
 <link href="res/css/fileinput.min.css" rel="stylesheet">
+<script>
+	function saveMedia() {
+		var formData = new FormData();
+		formData.append('file', $('input[type=file]')[0].files[0]);
+		console.log('form data' + formData);
+		$.ajax({
+			url : '/acne/post_images',
+			data : formData,
+			processData : false,
+			contentType : false,
+			type : 'POST',
+			success : function(data) {
+				var result = JSON.parse(data);
+				if (result.message == 'success') {
+					location.reload(true);
+				}
+			},
+			error : function(err) {
+				var result = JSON.parse(JSON.stringify(data));
+				if (result.message = 'fail') {
+					alert('failed to upload, please try again latter.');
+				}
+			}
+		});
+	}
 
+	function onUpdate(imageid, auth) {
+		var url = '/acne/update/image/' + imageid;
+		$.post(url, {
+			operation: 'update',
+			authority: auth
+		}, function(data, status){
+			console.log(status);
+			console.log(data);
+		});
+	}
+
+	function onDelete(imageid) {		
+		var url = '/acne/update/image/' + imageid;
+		$.post(url, {
+			operation: 'delete'
+		}, function(data, status){
+			if(status == 'success'){
+				location.reload(true);
+			}
+		});
+	}
+</script>
 </head>
 
 <body>
@@ -32,29 +82,73 @@
 		</ul>
 		<br />
 
+		<div id="upload_div" class="row">
+			<h3>上传照片</h3>
+			<form action="/acne/post_images" target="upload_target"
+				class="form-vertical required-validate" method="post"
+				enctype="multipart/form-data" onsubmit="saveMedia();">
+				<div class="col-lg-6 form-group">
+					<input type="file" class="file" data-show-upload="false"
+						data-show-preview="true">
+					<p class="help-block">支持jpg、jpeg、png、gif格式，大小不超过2.0M</p>
+				</div>
+				<div class="col-lg-6 form-group text-center">
+					<button id="upload_btn" type="submit" class="btn btn-default">上传</button>
+				</div>
+			</form>
+
+			<iframe id="upload_target" name="upload_target" src="#"
+				style="width: 0; height: 0; border: 0px solid #fff;"></iframe>
+		</div>
+
 		<div class="row">
-			<div class="col-lg-12">
-				<form action="/acne/post_images" method="post" target="target_frame"
-					enctype="multipart/form-data">
-					<input id="file_upload" class="file" name="image" type="file">
-				</form>
+			<h3>历史照片</h3>
+			<div id="display">
+				<%
+					Object imagesObj = request.getAttribute("acneImages");
+					if (imagesObj == null) {
+						out.print("<div style='font-size: 16px; color: #999999;'><h3>无照片可以显示</h3></div>");
+					} else {
+						List<AcneImage> acneImages = (ArrayList<AcneImage>) imagesObj;
+						for (int i = 0; i < acneImages.size(); i++) {
+							if (i % 3 == 0) {
+								out.print("<div class='row'>");
+							}
+							AcneImage acneImage = acneImages.get(i);
+							Long imageId = acneImage.getImageid();
+							out.print("<div class='col-lg-4'>");
+							out.print("<div class='card' style='font-size: 13px; color: #999999;'>");
+							Date date = acneImage.getPosttime();
+							Integer open = acneImage.getAuthorith();
+							String openStr = "";
+							String privateStr = "";
+							if(open == 1){
+								openStr = "";
+								privateStr = "active";
+							} else {
+								openStr = "active";
+								privateStr = "";
+							}
+							SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+							out.print("<div style='display: block; vertical-align: text-bottom;'>上传于：" + format.format(date));
+							out.print("<div style='display: block; float: right; margin-bottom: 5px;' class='btn-group' data-toggle='buttons'><label class='btn btn-default "+openStr+"' onclick='onUpdate("+imageId+", \"open\");'><input type='radio' name='options' autocomplete='off'>公开</label><label class='btn btn-default "+privateStr+"' onclick='onUpdate("+imageId+", \"private\");'><input type='radio' name='options' autocomplete='off'>隐私</label>");
+							out.print("<label class='btn btn-default' onclick='onDelete("+imageId+")'><input type='radio' name='options' autocomplete='off'>删除</label>");
+							out.print("</div></div>");
+							out.print("<img alt='Card image cap' style='height: 280px; width: 360px;' src='/acne/image/" + acneImage.getPath() + "'>");
+							out.print("</div>");
+							out.print("<div style='font-size: 14px; color: #ababab;'>简述：" + acneImage.getDesc() + "</div>");
+							out.print("</div>");
+							if (i % 3 == 2) {
+								out.print("</div><br /><br />");
+							}
+						}
+					}
+				%>
 			</div>
 		</div>
 
-		<%
-			Object imagesObj = request.getAttribute("acneImages");
-			if (imagesObj == null) {
-
-			} else {
-				List<AcneImage> acneImages = (ArrayList<AcneImage>) imagesObj;
-				for (int i = 0; i < acneImages.size(); i++) {
-
-				}
-			}
-		%>
-
 		<footer class="footer">
-		<p>&copy; Company 2017</p>
+			<p>&copy; Company 2017</p>
 		</footer>
 
 	</div>
@@ -73,20 +167,18 @@
 	<script charset="utf-8">
 		$(document).ready(function() {
 			$('#file_upload').fileinput({
-				uploadUrl : '/acne/post_images',
 				language : 'zh',
 				allowedFileExtensions : [ 'jpg', 'png', 'gif' ],
 				allowedPreviewTypes : [ 'image' ],
 				dropZoneEnabled : true,
-				enctype : 'multipart/form-data',
 				showUpload : true,
 				showRemove : true,
 				showCaption : false,
 				autoReplace : false,
 				browseClass : "btn btn-primary",
-				previewFileIcon : "<i class='glyphicon glyphicon-king'></i>",
-				maxFileSize : 2000,
+				previewFileIcon : "<i class='glyphicon glyphicon-king'></i>"
 			});
+
 		});
 	</script>
 </body>

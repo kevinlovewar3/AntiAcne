@@ -60,30 +60,49 @@
 		$(document).ready(function() {
 
 			$.get('/acne/posted_article', function(data, status) {
-				var article_list_html = '';
-				$.each(data, function(index, obj) {
-					var title = obj.title.substr(0, 10);
-					var articleId = obj.articleid;
-					var content = obj.content.substr(0, 50);
-					article_list_html += '<h4><a href="/acne/article?articleId=' + articleId + '">' + title + '</a></h4>';
-					article_list_html += '<p>' + content + '</p>';
-				});
-				$('#article_hist').html(article_list_html);
+
+				if (status == 'success') {
+					if (data === '[null]') {
+						$('#article_hist').html('<div style="font-size: 15px; color: #999999;">未发表文章</div>');
+					} else {
+						var article_list_html = '';
+						$.each(data, function(index, obj) {
+							var title = obj.title.substr(0, 10);
+							var articleId = obj.articleid;
+							var content = obj.content.substr(0, 50).replace("<p><br></p>", "").trim();
+							article_list_html += '<h4><a href="/acne/article?articleId=' + articleId + '">' + title + '</a></h4>';
+							article_list_html += '<p>' + content + '</p>';
+						});
+						$('#article_hist').html(article_list_html);
+					}
+				} else {
+					$('#article_hist').html('<div style="font-size: 15px; color: #999999;">未发表文章</div>');
+				}
+
 			});
-			
-			$.get('/acne/posted_goods', function(data, status){
-				var goods_list_html = '';
-				$.each(data, function(index, obj){
-					var goodsName = obj.goodsName;
-					var desc = obj.description.substr(0, 10);
-					var uploadDate = obj.uploadDate;
-					
-					console.log(goodsName + desc + uploadDate);
-					
-					goods_list_html += '<h4>'+goodsName+'</h4>';
-					goods_list_html += '<p>'+desc+'</p>';
-				});
-				$('#goods_hist').html(goods_list_html);
+
+			$.get('/acne/posted_goods', function(data, status) {
+				
+				if (status == 'success') {
+					if (data.length == 0 || data == []) {
+						$('#goods_hist').html('<div style="font-size: 15px; color: #999999;">未发布产品</div>');
+					} else {
+						var goods_list_html = '';
+						$.each(data, function(index, obj) {
+							var goodsName = obj.goodsName;
+							var desc = obj.description.substr(0, 10);
+							var uploadDate = obj.uploadDate;
+
+							console.log(goodsName + desc + uploadDate);
+
+							goods_list_html += '<h4>' + goodsName + '</h4>';
+							goods_list_html += '<p>' + desc + '</p>';
+						});
+						$('#goods_hist').html(goods_list_html);
+					}
+				} else {
+					$('#goods_hist').html('<div style="font-size: 15px; color: #999999;">未发布产品</div>');
+				}
 			});
 		});
 	</script>

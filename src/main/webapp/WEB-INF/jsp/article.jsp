@@ -46,12 +46,14 @@
 				<%
 					if (map != null) {
 						String title = map.get("title").toString();
+						out.print("<h1>");
 						out.print(title);
+						out.print("</h1>");
 					}
 				%>
 			</h1>
 			<p class="lead blog-description"
-				style="margin-bottom: 10px; margin-top: 10px;">
+				style="margin-bottom: 10px; margin-top: 10px; font-size: 15px;">
 				<%
 					if (map != null) {
 						String username = map.get("username").toString();
@@ -77,31 +79,64 @@
 				</div>
 				<div id="blog-content"></div>
 				<!-- /.blog-post -->
+
+				<div class="btn-group"
+					style="margin-top: 30px; margin-bottom: 40px;" role="group"
+					aria-label="acne option">
+					<button id="upTimebtn" type="button" class="btn btn-default"
+						data-toggle="tooltip" data-placement="top" title="赞  +1">赞一个</button>
+					<button id="downTimebtn" type="button" class="btn btn-default"
+						data-toggle="tooltip" data-placement="top" title="踩  +1">踩一下</button>
+				</div>
 				
-				<div class="btn-group" style="margin-top: 30px; margin-bottom: 40px;" role="group" aria-label="acne option">
-  					<button id="upTimebtn" type="button" class="btn btn-default" data-toggle="tooltip" data-placement="top" title="赞  +1">赞一个</button>
-  					<button id="downTimebtn" type="button" class="btn btn-default" data-toggle="tooltip" data-placement="top" title="踩  +1">踩一下</button>
+				<div class="">
+					<a href="/acne">返回首页</a>
 				</div>
 			</div>
 			<!-- /.blog-main -->
 			<div class="col-sm-3 offset-sm-1 blog-sidebar">
 				<div class="sidebar-module sidebar-module-inset">
 					<h4>关于作者</h4>
-					<p>
+					<%
+						String avatar = map.get("avatar").toString();
+						out.print("<img id='img_avatar' class='thumbnail' src='/acne/image/avatar/" + avatar
+								+ "' alt='Avatar' style='overflow: hidden, width: 120px; height: 120px;'/>");
+					%>
 						<em> <%
- 								if (map != null) {
- 									String username = map.get("username").toString();
- 									out.print(username);
- 								}
- 							%></em> 
- 							<br />
+ 	/**
+ 	Get article: 
+ 	{
+ 	upTimes=14, 
+ 	articleId=2, 
+ 	publishDate=2017-05-02 01:16:23.0, 
+ 	available=1, 
+ 	antiArticleId=37, 
+ 	description=资深抗痘人士, 
+ 	antiUserId=1, 
+ 	avatar=avatar.png, 
+ 	title=如何去痘痘？, 
+ 	downTimes=12, 
+ 	userId=1, 
+ 	content=1.不要用手去挤压, 
+ 	password=e10adc3949ba59abbe56e057f20f883e, 
+ 	phone=13774231926, 
+ 	viewTimes=126, 
+ 	username=安炎炎, 
+ 	registerDate=2017-03-15 08:18:01.0
+ 	}
+ 	*/
+
+ 	if (map != null) {
+ 		String username = map.get("username").toString();
+ 		out.print(username);
+ 	}
+ %></em> <br />
 						<%
 							if (map != null) {
 								String desc = map.get("description").toString();
 								out.print(desc);
 							}
 						%>
-					</p>
 				</div>
 				<div class="sidebar-module">
 					<h4>作者的其它文章</h4>
@@ -146,8 +181,6 @@
 	<!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
 	<script src="res/js/ie10-viewport-bug-workaround.js"></script>
 
-	<script src="res/js/Markdown.Converter.js"></script>
-
 	<script>
 		$(document).ready(function() {	
 			
@@ -159,8 +192,6 @@
 				return func.toString().split(/\n/).slice(1, -1).join('\n');
 			}
 			var content = hereDoc(aHereDoc);
-			var converter = new Markdown.Converter();
-			var htm = converter.makeHtml(content);
 			$('#blog-content').html(content);
 			
 			<%Object userIdObj = request.getSession().getAttribute("userId");
@@ -172,49 +203,49 @@
 			var userId = '<%=userId%>';
 			var userType = '<%=userType%>';
 
-			$.get('/acne/anti/article_list', {
-				articleId : articleId
-			}, function(data, status) {
+							$.get('/acne/anti/article_list', {
+								articleId : articleId
+							}, function(data, status) {
 
-				var article_list_html = '';
-				$.each(data, function(index, obj) {
-					var title = obj.title.substr(0, 10);
-					var articleId = obj.articleid;
-					article_list_html += '<li><a href="/acne/article?articleId=' + articleId + '">' + title + '</a></li>';
-				});
-				$('#article_list').html(article_list_html);
-			});
+								var article_list_html = '';
+								$.each(data, function(index, obj) {
+									var title = obj.title.substr(0, 10);
+									var articleId = obj.articleid;
+									article_list_html += '<li><a href="/acne/article?articleId=' + articleId + '">' + title + '</a></li>';
+								});
+								$('#article_list').html(article_list_html);
+							});
 
-			$.post('/acne/article_hist', {
-				articleId : articleId,
-				viewTimes : 1,
-				userId : userId,
-				userType : userType
-			}, function(data, status) {
-			});
-			
-			$('#upTimebtn').click(function(){
-				$.get('/acne/article/option?articleId='+articleId+'&upTimes=1', function(data, status){
-					if(status == 'success'){
-						$('#upTimebtn').tooltip('show');
-						setTimeout(function(){
-							$('#upTimebtn').tooltip('destroy');
-						}, 2500);
-					}
-				});
-			});
-			
-			$('#downTimebtn').click(function(){
-				$.get('/acne/article/option?articleId='+articleId+'&downTimes=1', function(data, status){
-					if(status == 'success'){
-						$('#downTimebtn').tooltip('show');
-						setTimeout(function(){
-							$('#downTimebtn').tooltip('destroy');
-						}, 2500);
-					}
-				});
-			});
-		});
+							$.post('/acne/article_hist', {
+								articleId : articleId,
+								viewTimes : 1,
+								userId : userId,
+								userType : userType
+							}, function(data, status) {
+							});
+
+							$('#upTimebtn').click(function() {
+								$.get('/acne/article/option?articleId=' + articleId + '&upTimes=1', function(data, status) {
+									if (status == 'success') {
+										$('#upTimebtn').tooltip('show');
+										setTimeout(function() {
+											$('#upTimebtn').tooltip('destroy');
+										}, 2500);
+									}
+								});
+							});
+
+							$('#downTimebtn').click(function() {
+								$.get('/acne/article/option?articleId=' + articleId + '&downTimes=1', function(data, status) {
+									if (status == 'success') {
+										$('#downTimebtn').tooltip('show');
+										setTimeout(function() {
+											$('#downTimebtn').tooltip('destroy');
+										}, 2500);
+									}
+								});
+							});
+						});
 	</script>
 
 </body>

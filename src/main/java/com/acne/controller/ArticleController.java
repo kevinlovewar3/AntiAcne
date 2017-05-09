@@ -1,5 +1,6 @@
 package com.acne.controller;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -17,10 +18,12 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.acne.application.AcneApplicationCtx;
 import com.acne.constant.Constants;
 import com.acne.model.Article;
 import com.acne.service.AcneUserService;
 import com.acne.service.ArticleService;
+import com.acne.util.ObjectUtil;
 import com.github.pagehelper.PageInfo;
 
 @Controller
@@ -38,6 +41,9 @@ public class ArticleController {
 
 	@Autowired
 	AcneUserService acneUserService;
+	
+	@Autowired
+	AcneApplicationCtx applicationCtx;
 
 	/**
 	 * 获取多页的博文
@@ -59,10 +65,14 @@ public class ArticleController {
 		PageInfo<Article> articles = articleService.queryByPage(pageNo, pageSize);
 		List<Article> list = articles.getList();
 		int pages = articles.getPages();
+		Integer acneNum = applicationCtx.getAcneNum();
+		Integer antiNum = applicationCtx.getAntiNum();
 
-		logger.info("Total num: {}, current: {}, PageInfo<Article>: {}", pages, pageNo, articles);
-
+		logger.info("Total num: {}, current: {}, PageInfo<Article>: {}, AcneNum: {}, AntiNum: {}", pages, pageNo, articles, acneNum, antiNum);
+		
 		ModelAndView mView = new ModelAndView();
+		mView.addObject("acneNum", acneNum);
+		mView.addObject("antiNum", antiNum);
 		mView.setViewName("index");
 		mView.addObject("articles", list);
 		mView.addObject("pages", pages);
@@ -96,10 +106,34 @@ public class ArticleController {
 	 */
 	@RequestMapping(value = "article", method = RequestMethod.POST)
 	@ResponseBody
-	public ModelAndView postArticles(HttpServletRequest request, HttpServletResponse response) {
-		// TODO 提交博文
-		ModelAndView modelAndView = new ModelAndView("index");
-		return modelAndView;
+	public String postArticles(HttpServletRequest request, HttpServletResponse response) {
+		Object userIdObj = request.getSession().getAttribute("userId");
+		Object userTypeObj = request.getSession().getAttribute("userType");
+		Long userId = ObjectUtil.ObjectToLong(userIdObj);
+		String userType = ObjectUtil.ObjectToString(userTypeObj);
+		if (userId == Long.MIN_VALUE || userType.equals(Constants.TYPE_ACNE)) {
+			return MSG_FAILED;
+		}
+
+		if (userType.equals(Constants.TYPE_ANTI)) {
+			String blog = request.getParameter("blog");
+			String title = request.getParameter("title");
+			
+			Article article = new Article();
+			article.setAvailable(1);
+			article.setContent(blog);
+			article.setTitle(title);
+			article.setUptimes(0);
+			article.setViewtimes(0);
+			article.setDowntimes(0);
+			article.setPublishdate(new Date());
+
+			long articleId = articleService.insertSelective(userId, article);
+
+			logger.info("inserted article with articleId: {}", articleId);
+			return MSG_SUCCESS;
+		}
+		return MSG_FAILED;
 	}
 
 	/**
@@ -117,7 +151,7 @@ public class ArticleController {
 	}
 
 	/**
-	 * 
+	 * 已发表博文
 	 */
 	@RequestMapping(value = "posted_article", method = RequestMethod.GET, produces = {
 			"application/json; charset=UTF-8" })
@@ -146,7 +180,7 @@ public class ArticleController {
 		String articleIdStr = request.getParameter("articleId");
 		Long articleId = articleIdStr == null ? 0L : Long.parseLong(articleIdStr);
 		Map<String, Object> map = articleService.selectAntiUserArticleByPrimaryKey(articleId);
-
+		
 		logger.info("Get article: {}", map);
 
 		ModelAndView mView = new ModelAndView("article");

@@ -16,7 +16,7 @@
 		</commentGenerator>
 		<!--数据库链接URL，用户名、密码 -->
 		<jdbcConnection driverClass="com.mysql.jdbc.Driver"
-			connectionURL="jdbc:mysql://localhost/acne" userId="root" password="cisco">
+			connectionURL="jdbc:mysql://10.75.189.108/acne" userId="cisco" password="cisco">
 		</jdbcConnection>
 		<javaTypeResolver>
 			<!-- This property is used to specify whether MyBatis Generator should 
@@ -42,15 +42,12 @@
 		</javaClientGenerator>
 
 		<!-- 要生成哪些表 -->
-		<table tableName="t_anti_article" domainObjectName="com.acne.model.AntiArticle"
-			enableCountByExample="false" enableUpdateByExample="false"
-			enableDeleteByExample="false" enableSelectByExample="false"
-			selectByExampleQueryId="false"></table>
-		<table tableName="t_anti_goods" domainObjectName="com.acne.model.AntiGoods"
-			enableCountByExample="false" enableUpdateByExample="false"
-			enableDeleteByExample="false" enableSelectByExample="false"
-			selectByExampleQueryId="false"></table>
-		<!-- <table tableName="t_acne_user" domainObjectName="com.acne.model.AcneUser" 
+		<!-- <table tableName="t_anti_article" domainObjectName="com.acne.model.AntiArticle" 
+			enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" 
+			enableSelectByExample="false" selectByExampleQueryId="false"></table> <table 
+			tableName="t_anti_goods" domainObjectName="com.acne.model.AntiGoods" enableCountByExample="false" 
+			enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" 
+			selectByExampleQueryId="false"></table> <table tableName="t_acne_user" domainObjectName="com.acne.model.AcneUser" 
 			enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" 
 			enableSelectByExample="false" selectByExampleQueryId="false"></table> <table 
 			tableName="t_anti_user" domainObjectName="com.acne.model.AntiAcneUser" enableCountByExample="false" 
@@ -62,9 +59,14 @@
 			enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" 
 			selectByExampleQueryId="false"></table> <table tableName="t_acne_goods" domainObjectName="com.acne.model.AcneUserGoods" 
 			enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" 
-			enableSelectByExample="false" selectByExampleQueryId="false"></table> <table 
-			tableName="t_acne_images" domainObjectName="com.acne.model.AcneImage" enableCountByExample="false" 
-			enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" 
+			enableSelectByExample="false" selectByExampleQueryId="false"></table>
+		<table tableName="t_acne_images" domainObjectName="com.acne.model.AcneImage"
+			enableCountByExample="false" enableUpdateByExample="false"
+			enableDeleteByExample="false" enableSelectByExample="false"
 			selectByExampleQueryId="false"></table> -->
+			<table tableName="t_validators" domainObjectName="com.acne.model.ValidatorImage"
+			enableCountByExample="false" enableUpdateByExample="false"
+			enableDeleteByExample="false" enableSelectByExample="false"
+			selectByExampleQueryId="false"></table>
 	</context>
 </generatorConfiguration>

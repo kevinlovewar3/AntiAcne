@@ -32,9 +32,11 @@ public class ArticleServiceImpl implements ArticleService {
 	}
 
 	@Override
-	public int insertSelective(Article record) {
-		// TODO Auto-generated method stub
-		return 0;
+	public long insertSelective(Long userId, Article record) {
+		articleMapper.insertSelective(record);
+		long articleId = record.getArticleid();
+		articleMapper.insertAntiArticle(userId, articleId);
+		return articleId;
 	}
 
 	@Override

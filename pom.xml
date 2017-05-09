@@ -215,19 +215,36 @@
 			<version>6.0</version>
 			<scope>provided</scope>
 		</dependency>
-
 		<dependency>
 			<groupId>taobao</groupId>
 			<artifactId>taobao</artifactId>
 			<version>1.0</version>
 		</dependency>
 
-
 		<!-- mybatis分页插件依赖 -->
 		<dependency>
 			<groupId>com.github.pagehelper</groupId>
 			<artifactId>pagehelper</artifactId>
 			<version>4.0.0</version>
+		</dependency>
+
+		<!-- shiro支持 -->
+		<dependency>
+			<groupId>org.apache.shiro</groupId>
+			<artifactId>shiro-core</artifactId>
+			<version>1.4.0-RC2</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.shiro</groupId>
+			<artifactId>shiro-web</artifactId>
+			<version>1.4.0-RC2</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.shiro</groupId>
+			<artifactId>shiro-spring</artifactId>
+			<version>1.4.0-RC2</version>
 		</dependency>
 
 	</dependencies>
@@ -265,12 +282,13 @@
 				<plugin>
 					<groupId>org.apache.tomcat.maven</groupId>
 					<artifactId>tomcat7-maven-plugin</artifactId>
-					<version>2.1</version>
+					<version>2.2</version>
 					<configuration>
-						<!-- 注意此处的url -->
-						<url>http://116.62.18.74:8080/manager/text</url>
-						<server>tomcat7</server> <!-- 此处的名字必须和setting.xml中配置的ID一致 -->
-						<path>/acne</path> <!-- 此处的名字是项目发布的工程名 -->
+						<url>http://10.75.189.108:8080/manager/text</url>
+						<server>TomcatServer</server>
+						<username>admin</username>
+						<password>cisco123</password>
+						<update>true</update>
 					</configuration>
 				</plugin>
 
@@ -280,6 +298,7 @@
 					<configuration>
 						<source>1.7</source>
 						<target>1.7</target>
+						<encoding>GBK</encoding>
 					</configuration>
 				</plugin>
 

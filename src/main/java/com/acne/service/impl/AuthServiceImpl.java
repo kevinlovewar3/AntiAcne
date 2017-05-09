@@ -49,13 +49,23 @@ public class AuthServiceImpl implements AuthService {
 
 	@Override
 	public AntiAcneUser isAntiAcneUser(String phone) {
-		// TODO Auto-generated method stub
-		return null;
+		AntiAcneUser antiAcneUser = antiAcneUserMapper.isAntiAcneUserExist(phone);
+		return antiAcneUser;
 	}
 
 	@Override
 	public void updateByPrimaryKeySelective(AcneUser acneUser) {
 		acneUserMapper.updateByPrimaryKeySelective(acneUser);
+	}
+
+	@Override
+	public void registerAcneUser(AcneUser acneUser) {
+		acneUserMapper.insertSelective(acneUser);
+	}
+
+	@Override
+	public void registerAntiUser(AntiAcneUser antiAcneUser) {
+		antiAcneUserMapper.insertSelective(antiAcneUser);
 	}
 
 }

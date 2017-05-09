@@ -10,4 +10,6 @@ public interface AntiUserService {
 	List<AntiAcneUser> queryRecommandsAntiUser();
 	
 	List<Article> queryPostedArticle(Long userId);
+	
+	Integer queryAntiUserNum();
 }

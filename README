@@ -1,0 +1,29 @@
+Version:
+
+	Spring 					4.3.7.RELEASE
+	MySql  					5.1.39
+	MyBatis					3.2.6
+	ActiveMQ				5.9.1
+	
+	
+TODO List:
+
+美工：
+ICON： 首页浏览数量 点赞数量 踩数量
+LOGO： SKIN FRESH
+
+
+Feature：
+
+网站浏览量生成
+优化页面布局
+登陆注册
+
+
+今日推荐算法实现
+
+
+编辑：
+编辑新的文章和产品
+
+

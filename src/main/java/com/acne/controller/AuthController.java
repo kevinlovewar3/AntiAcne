@@ -1,19 +1,27 @@
 package com.acne.controller;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.Random;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.json.JSONObject;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authc.DisabledAccountException;
+import org.apache.shiro.authc.ExcessiveAttemptsException;
+import org.apache.shiro.authc.ExpiredCredentialsException;
+import org.apache.shiro.authc.IncorrectCredentialsException;
+import org.apache.shiro.authc.LockedAccountException;
+import org.apache.shiro.authc.UnknownAccountException;
+import org.apache.shiro.authz.UnauthorizedException;
+import org.apache.shiro.subject.Subject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.DigestUtils;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -23,6 +31,8 @@ import com.acne.constant.Constants;
 import com.acne.model.AcneUser;
 import com.acne.model.AntiAcneUser;
 import com.acne.service.AuthService;
+import com.acne.shiro.UserTypeAuthenticationToken;
+import com.acne.util.ObjectUtil;
 import com.taobao.api.ApiException;
 import com.taobao.api.DefaultTaobaoClient;
 import com.taobao.api.TaobaoClient;
@@ -46,7 +56,10 @@ public class AuthController {
 	private static final String MSG_NO_USER = "{\"message\":\"no user find.\"}";
 
 	// 已注册
-	private static final String MSG_REGISTERED = "{\"message\":\"抱歉，该号码已注册!\"}";
+	private static final String MSG_REGISTERED = "{\"message\":\"Sorry already registered!\"}";
+
+	private static final String MSG_ERROR_VERIFY_CODE = "{\"message\": \"varified code error\"}";
+	private static final String MSG_ERROR_USERTYPE = "{\"message\": \"user type error\"}";
 
 	private static final String TYPE_ACNE = "acne_user";
 	private static final String TYPE_ANTI = "anti_user";
@@ -59,57 +72,60 @@ public class AuthController {
 	 * @return
 	 */
 	@RequestMapping(value = "login", method = RequestMethod.POST)
-	@ResponseBody
 	public ModelAndView postLogin(HttpServletRequest request, HttpServletResponse response) {
 
-		ModelAndView mView = new ModelAndView("auth");
-
-		String phone = request.getParameter("phone");
+		ModelAndView mView = new ModelAndView();
+		String phone = request.getParameter("username");
 		String password = request.getParameter("password");
-		String userType = request.getParameter("userType");
-
-		if (StringUtils.isEmpty(phone) || phone.trim().length() != 11) {
-			mView.addObject("result", MSG_PHONE);
-			return mView;
-		}
-		if (StringUtils.isEmpty(password)) {
-			mView.addObject("result", MSG_PASSWORD);
-			return mView;
-		}
-		if (StringUtils.isEmpty(userType)) {
-			mView.addObject("result", MSG_NOUSERTYPE);
-			return mView;
-		}
 		password = DigestUtils.md5DigestAsHex(password.getBytes());
-		if (userType.equalsIgnoreCase(TYPE_ACNE)) {
-			AcneUser acneUser = authService.selectByPhone(phone, password);
-			if (acneUser == null) {
-				mView.addObject("result", MSG_NO_USER);
-				return mView;
-			}
+		String userType = request.getParameter("userType");
+		String rememberMe = request.getParameter("rememberMe");
 
-			logger.info("login user: {}", acneUser);
-
-			JSONObject acneUserJsonObj = new JSONObject(acneUser);
-			mView.addObject("result", acneUserJsonObj);
-			mView.addObject("userType", TYPE_ACNE);
-		} else if (userType.equalsIgnoreCase(TYPE_ANTI)) {
-			AntiAcneUser antiAcneUser = authService.selectAntiByPhone(phone, password);
-			if (antiAcneUser == null) {
-				mView.addObject("result", MSG_NO_USER);
-				return mView;
-			}
-
-			logger.info("anti acne user: {}", antiAcneUser);
-
-			JSONObject antiUserJsonObj = new JSONObject(antiAcneUser);
-			mView.addObject("result", antiUserJsonObj);
-			mView.addObject("userType", TYPE_ANTI);
-		} else {
-			mView.addObject("result", MSG_NOUSERTYPE);
-			return mView;
+		boolean remMe = false;
+		try {
+			remMe = Boolean.parseBoolean(rememberMe);
+		} catch (Exception e) {
+			remMe = false;
 		}
+		
+		logger.info("parameters username: {}, password: {}, userType: {}", phone, password, userType);
 
+		UserTypeAuthenticationToken token = new UserTypeAuthenticationToken(phone, password.toCharArray(), userType);
+		token.setRememberMe(true);
+		Subject subject = SecurityUtils.getSubject();
+		String msg = null;
+		try {
+			if (subject.isAuthenticated()) {
+				mView.setViewName("index");
+				return mView;
+			} 
+			
+			token.setRememberMe(remMe);
+			subject.login(token);
+		} catch (IncorrectCredentialsException e) {
+			msg = "登录密码错误. Password for account " + token.getPrincipal() + " was incorrect.";
+			logger.info("{}\n IncorrectCredentialsException: {}", msg, e);
+		} catch (ExcessiveAttemptsException e) {
+			msg = "登录失败次数过多";
+			logger.info("{}\n ExcessiveAttemptsException: {}", msg, e);
+		} catch (LockedAccountException e) {
+			msg = "帐号已被锁定. The account for username " + token.getPrincipal() + " was locked.";
+			logger.info("{}\n LockedAccountException: {}", msg, e);
+		} catch (DisabledAccountException e) {
+			msg = "帐号已被禁用. The account for username " + token.getPrincipal() + " was disabled.";	
+			logger.info("{}\n DisabledAccountException: {}", msg, e);
+		} catch (ExpiredCredentialsException e) {
+			msg = "帐号已过期. the account for username " + token.getPrincipal() + "  was expired.";
+			logger.info("{}\n ExpiredCredentialsException: {}", msg, e);
+		} catch (UnknownAccountException e) {
+			msg = "帐号不存在. There is no user with username of " + token.getPrincipal();
+			logger.info("{}\n UnknownAccountException: {}", msg, e);
+		} catch (UnauthorizedException e) {
+			msg = "您没有得到相应的授权！" + e.getMessage();
+			logger.info("{}\n UnauthorizedException: {}", msg, e);
+		}
+		mView.setViewName("auth");
+		mView.addObject("message", msg);
 		return mView;
 	}
 
@@ -120,8 +136,10 @@ public class AuthController {
 	 */
 	@RequestMapping(value = "login", method = RequestMethod.GET)
 	@ResponseBody
-	public ModelAndView getLogin() {
+	public ModelAndView getLogin(HttpServletRequest request, HttpServletResponse response) {
 		ModelAndView mView = new ModelAndView("auth");
+		HttpSession session = request.getSession();
+		session.setAttribute("", "");
 		return mView;
 	}
 
@@ -138,14 +156,23 @@ public class AuthController {
 	public String sendCode(HttpServletRequest request, HttpServletResponse response) throws ApiException {
 		String phone = request.getParameter("phone");
 		String userType = request.getParameter("userType");
+
+		logger.info("phone: {}, userType: {}", phone, userType);
+
 		if (userType.equalsIgnoreCase(Constants.TYPE_ACNE)) {
 			AcneUser acneUser = authService.isAcneUserExist(phone);
-			if (acneUser != null) {
+
+			logger.info("acneUser: {}", acneUser);
+
+			if (acneUser != null && acneUser.getPhone() != null) {
 				return MSG_REGISTERED;
 			}
 		} else if (userType.equalsIgnoreCase(Constants.TYPE_ANTI)) {
 			AntiAcneUser antiAcneUser = authService.isAntiAcneUser(phone);
-			if (antiAcneUser != null) {
+
+			logger.info("antiAcneUser: {}", antiAcneUser);
+			if (antiAcneUser != null && antiAcneUser.getPhone() != null) {
+
 				return MSG_REGISTERED;
 			}
 		}
@@ -179,6 +206,38 @@ public class AuthController {
 		return rsp.getBody();
 	}
 
+	@RequestMapping(value = "register_no_verify", method = RequestMethod.POST, produces = {
+			"application/json; charset=UTF-8" })
+	@ResponseBody
+	public String register_no_verify(HttpServletRequest request, HttpServletResponse response) {
+		String userType = request.getParameter("userType");
+		String phone = request.getParameter("phone");
+		String password = request.getParameter("password");
+
+		if (userType == null || userType.equals(Constants.TYPE_ACNE)) {
+			AcneUser acneUser = new AcneUser();
+			acneUser.setUsername("");
+			acneUser.setPhone(phone);
+			acneUser.setPassword(password);
+			acneUser.setAvailable(1);
+			acneUser.setRegisterdate(new Date());
+			acneUser.setDescription("新晋美肤成员一枚");
+			authService.registerAcneUser(acneUser);
+		} else if (userType.equals(Constants.TYPE_ANTI)) {
+			AntiAcneUser antiAcneUser = new AntiAcneUser();
+			antiAcneUser.setUsername("");
+			antiAcneUser.setAvailable(1);
+			antiAcneUser.setPhone(phone);
+			antiAcneUser.setRegisterdate(new Date());
+			antiAcneUser.setDescription("新晋美肤大人一枚");
+			authService.registerAntiUser(antiAcneUser);
+		} else {
+			return MSG_ERROR_USERTYPE;
+		}
+
+		return MSG_SUCCESS;
+	}
+
 	/**
 	 * 注册
 	 * 
@@ -191,14 +250,45 @@ public class AuthController {
 	public String register(HttpServletRequest request, HttpServletResponse response) {
 
 		String code = request.getParameter("code");
-		Object codeLast = request.getSession().getAttribute("code");
-		if (null == codeLast) {
+		String userType = request.getParameter("userType");
+		String phone = request.getParameter("phone");
+		String password = request.getParameter("password");
 
+		Object codeLastObj = request.getSession().getAttribute("code");
+		String codeLast = ObjectUtil.ObjectToString(codeLastObj);
+		if (code.equalsIgnoreCase(codeLast)) {
+			if (userType.equals(Constants.TYPE_ACNE)) {
+				AcneUser acneUser = new AcneUser();
+				acneUser.setPhone(phone);
+				acneUser.setPassword(password);
+				acneUser.setAvailable(1);
+				acneUser.setRegisterdate(new Date());
+				acneUser.setDescription("新晋美肤成员一枚");
+				authService.registerAcneUser(acneUser);
+			} else if (userType.equals(Constants.TYPE_ANTI)) {
+				AntiAcneUser antiAcneUser = new AntiAcneUser();
+				antiAcneUser.setAvailable(1);
+				antiAcneUser.setPhone(phone);
+				antiAcneUser.setRegisterdate(new Date());
+				antiAcneUser.setDescription("新晋美肤大人一枚");
+				authService.registerAntiUser(antiAcneUser);
+			} else {
+				return MSG_ERROR_USERTYPE;
+			}
+		} else {
+			return MSG_ERROR_VERIFY_CODE;
 		}
 
-		return null;
+		return MSG_SUCCESS;
 	}
 
+	/**
+	 * 完善个人信息
+	 * 
+	 * @param request
+	 * @param response
+	 * @return
+	 */
 	@RequestMapping(value = "complete", method = RequestMethod.POST, produces = { "application/json; charset=UTF-8" })
 	@ResponseBody
 	public String complete(HttpServletRequest request, HttpServletResponse response) {
@@ -207,6 +297,7 @@ public class AuthController {
 		String skinType = request.getParameter("skinType");
 		String ageStr = request.getParameter("age");
 		String spanTimeStr = request.getParameter("spanTime");
+		String desc = request.getParameter("desc");
 		Integer age = (ageStr == null || ageStr.length() == 0) ? null : Integer.parseInt(ageStr);
 		Integer spanTime = (spanTimeStr == null || spanTimeStr.length() == 0) ? null : Integer.parseInt(spanTimeStr);
 
@@ -217,6 +308,7 @@ public class AuthController {
 		acneUser.setSkintype(skinType);
 		acneUser.setAge(age);
 		acneUser.setAcnetimespan(spanTime);
+		acneUser.setDescription(desc);
 
 		authService.updateByPrimaryKeySelective(acneUser);
 		return MSG_SUCCESS;

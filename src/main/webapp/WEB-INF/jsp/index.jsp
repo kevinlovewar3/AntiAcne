@@ -1,8 +1,10 @@
+<%@page import="java.text.SimpleDateFormat"%>
 <%@page import="java.net.URLDecoder"%>
 <%@page import="org.apache.jasper.tagplugins.jstl.core.ForEach"%>
 <%@page import="java.util.ArrayList"%>
 <%@page import="com.acne.model.Article"%>
 <%@page import="java.util.List"%>
+<%@page import="java.util.Date"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
@@ -21,6 +23,7 @@
 
 <!-- Custom styles for this template -->
 <link href="res/css/offcanvas.css" rel="stylesheet">
+<link href="res/css/narrow-jumbotron.css" rel="stylesheet">
 </head>
 
 <body style="padding-top: 0px;">
@@ -38,8 +41,7 @@
 					</div>
 					<div class="modal-body">
 						<div class="form-group">
-							<label for="name">Please feel free and send your
-								suggestion to us, Thank you in advance.</label>
+							<label for="name">留言薄</label>
 							<textarea id="text_suggest" class="form-control" rows="5"></textarea>
 						</div>
 					</div>
@@ -66,8 +68,11 @@
 					<td style="width: 50%">
 						<ul class="nav nav-pills">
 							<li role="presentation" class="active"><a href="#">精选博文</a></li>
-							<li role="presentation"><a href="/acne/goods-self">推荐产品</a></li>
+							<li role="presentation"><a href="/acne/goods">产品分析</a></li>
 							<%
+								Object acneNumObj = request.getAttribute("acneNum");
+								Object antiNumObj = request.getAttribute("antiNum");
+
 								Object userType = request.getSession().getAttribute("userType");
 								if (userType != null) {
 									if (userType.toString().equalsIgnoreCase("acne_user")) {
@@ -80,7 +85,7 @@
 										out.print("</a>");
 										out.print("<ul class='dropdown-menu'>");
 										out.print("<li style='margin: 0 auto;'><a href='/acne/acneuser'>个人首页</a></li>");
-										out.print("<li style='margin: 0 auto;'><a href='#'>自拍上传</a></li>");
+										out.print("<li style='margin: 0 auto;'><a href='/acne/post_images'>自拍上传</a></li>");
 										out.print("<li style='margin: 0 auto;'><a href='/acne/logout'>注销</a></li>");
 										out.print("</ul></li>");
 									}
@@ -126,7 +131,9 @@
 					<h2>重要通知</h2>
 					<p>
 						请大家查看小编精心挑选的博文，并留下宝贵的意见。小编会坚持查找优质博文，同时为大家推荐物美价廉的产品。
-						同时大家可以把自己的照片上传，<b>您的信息不会泄露给任何人</b>。网站目前已有18位达人注册，帮助您解决问题。
+						同时大家可以把自己的照片上传，<b>您的信息不会泄露给任何人</b>。网站目前已有<%
+						out.print(antiNumObj.toString());
+					%>位达人注册，帮助您解决问题。
 					</p>
 				</div>
 				<div class="row">
@@ -139,19 +146,31 @@
 
 							String title = article.getTitle();
 							String content = article.getContent();
-							String digest = content.length() > 50 ? content.substring(0, 50) : content;
+							String digest = content.length() > 60 ? content.substring(0, 60) + "......" : content;
+							Integer upTimes = article.getUptimes();
+							Integer downTimes = article.getDowntimes();
+							Integer viewTimes = article.getViewtimes();
+							Date publishDate = article.getPublishdate();
+							SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-							out.print("<div class='col-6 col-lg-4'>");
-							out.print("<h3>");
+							out.print("<div class='col-6 col-lg-4' style='margin-bottom: 10px;'>");
+							out.print("<h4 style='color: #333333;'>");
 							out.print(title);
-							out.print("</h3>");
-							out.print("<p>");
+							out.print("</h4>");
+							out.print("<div style='font-size: 10px; color: #636363;'>");
+							out.print("发布于:" + format.format(publishDate));
+							out.print("</div>");
+							out.print("<div style='font-size: 14px; margin-top: 5px; color: #333333;'>");
 							out.print(digest);
-							out.print("</p>");
-							out.print("<p>");
 							out.print("<a class='btn btn-secondary' href='/acne/article?articleId=" + articleId
 									+ "' role='button'>查看详情&raquo;</a>");
-							out.print("</p>");
+							out.print("</div>");
+							out.print("<div style='font-size: 10px;line-height: 15px; color: #999999;'>");
+							out.print("浏览:" + viewTimes);
+							out.print("&nbsp;&nbsp;赞:" + upTimes);
+							out.print("&nbsp;&nbsp;踩:" + downTimes);
+							out.print("&nbsp;&nbsp;0 " + "位行家推荐");
+							out.print("</div>");
 							out.print("</div>");
 						}
 					%>
@@ -161,12 +180,35 @@
 			<!--/span-->
 
 			<div class="col-6 col-md-3">
+
+				<div class="card" style="padding: 5px;">
+					<p>
+						<b>关于本站</b>
+					</p>
+					<%
+						out.print("用户数量：" + acneNumObj.toString());
+						out.print("<br />");
+						out.print("护肤专家：" + antiNumObj.toString());
+						out.print("<br />");
+						out.print("已帮助0人");
+					%>
+				</div>
+
+				<br />
 				<p>
 					<b>今天推荐</b>
 				</p>
-			</div>
-			<div class="col-6 col-md-3 sidebar-offcanvas" id="sidebar">
-				<div id="list-articles" class="list-group"></div>
+				<div class="sidebar-offcanvas" id="sidebar">
+					<div id="list-articles" class="list-group"></div>
+				</div>
+
+				<br />
+				<p>
+					<b>推荐行家</b>
+				</p>
+				<div class="sidebar-offcanvas" id="sidebar2">
+					<div id="list-anti-users" class="list-group"></div>
+				</div>
 			</div>
 			<!--/span-->
 		</div>
@@ -237,8 +279,7 @@
 	<script src="res/js/ie10-viewport-bug-workaround.js"></script>
 	<script src="res/js/offcanvas.js"></script>
 	<script charset="utf-8">
-		$(document)
-				.ready(
+		$(document).ready(
 						function() {
 							$('#myModal').on('shown.bs.modal', function() {
 								$('#suggest').focus();
@@ -247,28 +288,48 @@
 							$('#btn_submit').click(function(){
 								var userId =<%=request.getSession().getAttribute("userId")%>;
 								var userType ='<%=request.getSession().getAttribute("userType")%>';
-								var suggest = $('#text_suggest').val();
-								
-								$.post('/acne/post_suggest', {
-									userId : userId,
-									userType : userType,
-									suggest : suggest
-								}, function(data, status) {
-									$('#myModal').modal('hide');
-								});	
-							});
-							
-							$.get('/acne/recommands',
-											{
-												size : 10
-											},
-											function(data, status) {
-												$.each(data,function(index,obj) {
-													var title = obj.title.substr(0,10);
-													$("#list-articles").append('<a href="/acne/article?articleId='+ obj.articleid+ '" class="list-group-item">'+ title+ '</a>');
-												});
-											});
-						});
+				var suggest = $('#text_suggest').val();
+
+				$.post('/acne/post_suggest', {
+					userId : userId,
+					userType : userType,
+					suggest : suggest
+				}, function(data, status) {
+					$('#myModal').modal('hide');
+				});
+			});
+
+			$.get('/acne/recommands', {
+				size :6
+			}, function(data, status) {
+				$.each(data, function(index, obj) {
+					var title = obj.title.substr(0, 10);
+					$("#list-articles").append('<a href="/acne/article?articleId=' + obj.articleid + '" class="list-group-item">' + title + '</a>');
+				});
+			});
+			
+			$.get('/acne/anti/recommands', function(data, status) {
+				if (status == 'success') {
+					var recommand_html = '';
+					data.forEach(function(value, index, arr) {
+						var userId = value.userid;
+						var avatar = value.avatar;
+						var username = value.username;
+						var desc = value.description;
+						var title = value.title;
+						var titles = title.split('|');
+					
+						recommand_html += '<div>';
+						recommand_html += '<a href="/acne/anti/userId='+userId+'" title="'+desc+'" class="thumbnail"><img style="width: 100px; height: 80px;" src="/acne/image/avatar/'+avatar+'" alt="avatar"></a>';
+						recommand_html += '<span><b>'+username+'</b></span>';
+						recommand_html += '<div class="tip"><span>'+titles[0]+'年护肤经验 '+titles[1]+'</span></div>';
+						recommand_html += '</div>';
+		
+					});
+					$('#list-anti-users').html(recommand_html);
+				}
+			});
+		});
 	</script>
 </body>
 </html>
