@@ -142,8 +142,8 @@
 		from t_acne_images where acneUserId = #{userId, jdbcType=BIGINT}
 	</select>
 	<insert id="postImages">
-		insert into t_acne_images(acneUserId, postTime, path)
-		values (#{userId, jdbcType=BIGINT}, now(), #{path, jdbcType=VARCHAR})
+		insert into t_acne_images(acneUserId, postTime, path, t_acne_images.desc)
+		values (#{userId, jdbcType=BIGINT}, now(), #{path, jdbcType=VARCHAR}, #{desc, jdbcType=VARCHAR})
 	</insert>
 	<insert id="postAvatar">
 		update t_acne_user set avatar = #{path,

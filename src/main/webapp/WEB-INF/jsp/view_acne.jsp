@@ -18,7 +18,8 @@
 
 <!-- Bootstrap core CSS -->
 <link href="res/css/bootstrap.min.css" rel="stylesheet">
-
+<!-- Custom styles for this template -->
+<link href="res/css/narrow-jumbotron.css" rel="stylesheet">
 </head>
 
 <body>
@@ -32,90 +33,96 @@
 		</ul>
 		<br />
 
-		<div class="container">
+		<%
+			List<AcneImage> acneImages = (ArrayList) request.getAttribute("acneUsers");
+			SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			for (int i = 0; i < acneImages.size(); i++) {
+				AcneImage acneImage = acneImages.get(i);
+				Long imageId = acneImage.getImageid();
+				String imageName = acneImage.getPath();
+				String desc = acneImage.getDesc();
+				Date postTime = acneImage.getPosttime();
+				Integer auth = acneImage.getAuthorith();
+				if (auth == 1)
+					continue;
 
+				out.print("<div class='row'>");
+				out.print("<div class='col-lg-4'>");
+				out.print("<img alt='Card image cap' style='height: 280px; width: 360px;' src='/acne/image/"
+						+ acneImage.getPath() + "'>");
+				out.print("</div>");
+				
+				out.print("<div class='col-lg-8'>");
+				out.print("<div style='font-size: 17px; color: #888888; padding-top: 20px;'>");
+				out.print("上传于：" + format.format(postTime));
+				out.print("</div>");
+				out.print("<div style='margin-top: 10px;'>");
+				out.print("<textarea id='comments' placeholder='留言' rows='5' cols='0' style='width: 80%; padding: 3px; font-size: 18px; color: #444444;'></textarea>");
+				out.print("</div>");
+				out.print("<div style='margin-top: 10px;'>");
+				out.print("<button class='btn btn-default' type='button'>提交</button>");
+				out.print("</div>");
+				out.print("</div>");
+				out.print("</div>");
+				out.print("<br /><br />");
+			}
+			if (acneImages.size() == 0) {
+				out.print("<div class='row'>");
+				out.print("<div class='col-lg-12' style='font-size: 20px; color: #999999;'>");
+				out.print("暂时没有信息");
+				out.print("</div>");
+				out.print("</div>");
+			}
+		%>
 
-			<%
-				List<AcneImage> acneImages = (ArrayList) request.getAttribute("acneUsers");
-				SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-				for (int i = 0; i < acneImages.size(); i++) {
-					AcneImage acneImage = acneImages.get(i);
-					Long imageId = acneImage.getImageid();
-					String imageName = acneImage.getPath();
-					String desc = acneImage.getDesc();
-					Date postTime = acneImage.getPosttime();
-					Integer auth = acneImage.getAuthorith();
-					if (auth == 1)
-						continue;
-
-					if (i % 3 == 0) {
-						out.print("<div class='row'>");
-					}
-
-					out.print("<div class='col-lg-4'>");
-					out.print("<div style='font-size: 15px; color: #ababab;'>");
-					out.print("上传于：" + format.format(postTime));
-					out.print("</div>");
-					out.print("<p>");
-					out.print("<img alt='Card image cap' style='height: 280px; width: 360px;' src='/acne/image/"
-							+ acneImage.getPath() + "'>");
-					out.print("</p>");
-					out.print(
-							"<div class='input-group'><span class='input-group-addon' id='basic-addon1'>留言：</span><input type='text' class='form-control' placeholder='' aria-describedby='basic-addon1'></div>");
-					out.print("</div>");
-					if (i % 3 == 2) {
-						out.print("</div><br /><br />");
-					}
-				}
-			%>
-
-		</div>
-		<hr />
 		<nav aria-label="Page navigation">
 		<ul class="pagination pagination-lg">
 			<%
 				Integer pages = (Integer) request.getAttribute("pages");
 				Integer current = (Integer) request.getAttribute("current");
-				if (current > 1) {
-					out.print("<li class='enabled'><a href='/acne?pageNo=" + (current - 1)
-							+ "&pageSize=9'><span aria-hidden='true'>&laquo;</a></span></li>");
+				if (pages == 0) {
 				} else {
-					out.print("<li class='disabled'><span><span aria-hidden='true'>&laquo;</span></span></li>");
-				}
-				if (current >= 6 && pages > 10) {
-					for (int m = 5; m >= 1; m--) {
-						out.print("<li class='enabled'><a href='/acne?pageNo=" + (current - m) + "&pageSize=9'>"
-								+ (current - m) + "<span class='sr-only'>(current)</a></span></li>");
+					if (current > 1) {
+						out.print("<li class='enabled'><a href='/acne?pageNo=" + (current - 1)
+								+ "&pageSize=9'><span aria-hidden='true'>&laquo;</a></span></li>");
+					} else {
+						out.print("<li class='disabled'><span><span aria-hidden='true'>&laquo;</span></span></li>");
 					}
-					out.print("<li class='active'><span>" + current + "<span class='sr-only'>(current)</span></span></li>");
-					int next = (pages - current < 4) ? (pages - current) : 4;
-					for (int n = 1; n <= next; n++) {
-						out.print("<li class='enabled'><a href='/acne?pageNo=" + (current + n) + "&pageSize=9'>"
-								+ (current + n) + "<span class='sr-only'>(current)</a></span></li>");
-					}
-				} else {
-					int pageNum = pages >= 10 ? 10 : pages;
-					for (int i = 1; i <= pageNum; i++) {
-						if (current == i) {
-							out.print(
-									"<li class='active'><span>" + i + "<span class='sr-only'>(current)</span></span></li>");
-						} else {
-							out.print("<li class='enabled'><a href='/acne?pageNo=" + i + "&pageSize=9'>" + i
-									+ "<span class='sr-only'>(current)</a></span></li>");
+					if (current >= 6 && pages > 10) {
+						for (int m = 5; m >= 1; m--) {
+							out.print("<li class='enabled'><a href='/acne?pageNo=" + (current - m) + "&pageSize=9'>"
+									+ (current - m) + "<span class='sr-only'>(current)</a></span></li>");
+						}
+						out.print("<li class='active'><span>" + current
+								+ "<span class='sr-only'>(current)</span></span></li>");
+						int next = (pages - current < 4) ? (pages - current) : 4;
+						for (int n = 1; n <= next; n++) {
+							out.print("<li class='enabled'><a href='/acne?pageNo=" + (current + n) + "&pageSize=9'>"
+									+ (current + n) + "<span class='sr-only'>(current)</a></span></li>");
+						}
+					} else {
+						int pageNum = pages >= 10 ? 10 : pages;
+						for (int i = 1; i <= pageNum; i++) {
+							if (current == i) {
+								out.print("<li class='active'><span>" + i
+										+ "<span class='sr-only'>(current)</span></span></li>");
+							} else {
+								out.print("<li class='enabled'><a href='/acne?pageNo=" + i + "&pageSize=9'>" + i
+										+ "<span class='sr-only'>(current)</a></span></li>");
+							}
 						}
 					}
-				}
-				if (current >= pages) {
-					out.print("<li class='disabled'><span><span aria-hidden='true'>&raquo;</span></span></li>");
-				} else {
-					out.print("<li class='enabled'><a href='/acne?pageNo=" + (current + 1)
-							+ "&pageSize=9'><span aria-hidden='true'>&raquo;</a></span></li>");
+					if (current >= pages) {
+						out.print("<li class='disabled'><span><span aria-hidden='true'>&raquo;</span></span></li>");
+					} else {
+						out.print("<li class='enabled'><a href='/acne?pageNo=" + (current + 1)
+								+ "&pageSize=9'><span aria-hidden='true'>&raquo;</a></span></li>");
+					}
 				}
 			%>
 
 		</ul>
 		</nav>
-
 
 		<footer class="footer">
 		<p>&copy; Company 2017</p>

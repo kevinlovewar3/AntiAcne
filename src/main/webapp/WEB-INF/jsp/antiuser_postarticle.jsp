@@ -16,7 +16,8 @@
 <link href="res/css/bootstrap-markdown.min.css" rel="stylesheet">
 <link href="res/css/bootstrap-theme.min.css" rel="stylesheet">
 <link href="res/css/summernote.css" rel="stylesheet">
-
+<!-- Custom styles for this template -->
+<link href="res/css/narrow-jumbotron.css" rel="stylesheet">
 </head>
 
 <body>

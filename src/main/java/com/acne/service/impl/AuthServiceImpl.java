@@ -2,6 +2,7 @@ package com.acne.service.impl;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -10,6 +11,7 @@ import com.acne.dao.AcneUserMapper;
 import com.acne.dao.AntiAcneUserMapper;
 import com.acne.model.AcneUser;
 import com.acne.model.AntiAcneUser;
+import com.acne.model.ValidatorImage;
 import com.acne.service.AuthService;
 
 @Service("authService")
@@ -66,6 +68,22 @@ public class AuthServiceImpl implements AuthService {
 	@Override
 	public void registerAntiUser(AntiAcneUser antiAcneUser) {
 		antiAcneUserMapper.insertSelective(antiAcneUser);
+	}
+
+	@Override
+	public ValidatorImage selectValidatorImageById() {
+		String validatorString = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+		StringBuilder builder = new StringBuilder();
+		Random random = new Random();
+		for (int i = 0; i < 4; i++) {
+			int next = random.nextInt(validatorString.length());
+			char ch = validatorString.charAt(next);
+			builder.append(ch);
+		}
+		ValidatorImage validatorImage = new ValidatorImage();
+		validatorImage.setValidatorname(builder.toString());
+		validatorImage.setValidatorvalue(builder.toString());
+		return validatorImage;
 	}
 
 }

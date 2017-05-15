@@ -7,6 +7,9 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.session.Session;
+import org.apache.shiro.subject.Subject;
 import org.json.JSONArray;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,7 +44,7 @@ public class ArticleController {
 
 	@Autowired
 	AcneUserService acneUserService;
-	
+
 	@Autowired
 	AcneApplicationCtx applicationCtx;
 
@@ -68,8 +71,9 @@ public class ArticleController {
 		Integer acneNum = applicationCtx.getAcneNum();
 		Integer antiNum = applicationCtx.getAntiNum();
 
-		logger.info("Total num: {}, current: {}, PageInfo<Article>: {}, AcneNum: {}, AntiNum: {}", pages, pageNo, articles, acneNum, antiNum);
-		
+		logger.info("Total num: {}, current: {}, PageInfo<Article>: {}, AcneNum: {}, AntiNum: {}", pages, pageNo,
+				articles, acneNum, antiNum);
+
 		ModelAndView mView = new ModelAndView();
 		mView.addObject("acneNum", acneNum);
 		mView.addObject("antiNum", antiNum);
@@ -118,7 +122,7 @@ public class ArticleController {
 		if (userType.equals(Constants.TYPE_ANTI)) {
 			String blog = request.getParameter("blog");
 			String title = request.getParameter("title");
-			
+
 			Article article = new Article();
 			article.setAvailable(1);
 			article.setContent(blog);
@@ -180,7 +184,7 @@ public class ArticleController {
 		String articleIdStr = request.getParameter("articleId");
 		Long articleId = articleIdStr == null ? 0L : Long.parseLong(articleIdStr);
 		Map<String, Object> map = articleService.selectAntiUserArticleByPrimaryKey(articleId);
-		
+
 		logger.info("Get article: {}", map);
 
 		ModelAndView mView = new ModelAndView("article");

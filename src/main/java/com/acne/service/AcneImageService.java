@@ -7,7 +7,7 @@ import com.github.pagehelper.PageInfo;
 
 public interface AcneImageService {
 
-	void postImages(String path, Long userId);
+	void postImages(String path, Long userId, String desc);
 
 	void postAvatar(String path, Long userId);
 

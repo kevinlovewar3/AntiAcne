@@ -12,7 +12,7 @@ import com.acne.service.AntiUserService;
 public class AcneApplicationRefresh implements ApplicationListener<ContextRefreshedEvent> {
 
 	private static final Logger logger = LoggerFactory.getLogger(AcneApplicationRefresh.class);
-	
+
 	@Autowired
 	AcneUserService acneUserService;
 

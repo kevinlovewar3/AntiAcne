@@ -22,6 +22,8 @@
 
 <!-- Custom styles for this template -->
 <link href="res/css/fileinput.min.css" rel="stylesheet">
+<!-- Custom styles for this template -->
+<link href="res/css/narrow-jumbotron.css" rel="stylesheet">
 <script>
 	function saveMedia() {
 		var formData = new FormData();
@@ -51,20 +53,20 @@
 	function onUpdate(imageid, auth) {
 		var url = '/acne/update/image/' + imageid;
 		$.post(url, {
-			operation: 'update',
-			authority: auth
-		}, function(data, status){
+			operation : 'update',
+			authority : auth
+		}, function(data, status) {
 			console.log(status);
 			console.log(data);
 		});
 	}
 
-	function onDelete(imageid) {		
+	function onDelete(imageid) {
 		var url = '/acne/update/image/' + imageid;
 		$.post(url, {
-			operation: 'delete'
-		}, function(data, status){
-			if(status == 'success'){
+			operation : 'delete'
+		}, function(data, status) {
+			if (status == 'success') {
 				location.reload(true);
 			}
 		});
@@ -78,28 +80,31 @@
 		<ul class="nav nav-tabs">
 			<li role="presentation"><a href="/acne/acneuser">个人首页</a></li>
 			<li role="presentation" class="active"><a href="#">自拍照片</a></li>
-			<li role="presentation"><a href="/acne/anti_recommands">推荐达人</a></li>
+			<li role="presentation"><a href="/acne/anti_recommands">推荐专家</a></li>
 		</ul>
 		<br />
-
-		<div id="upload_div" class="row">
-			<h3>上传照片</h3>
-			<form action="/acne/post_images" target="upload_target"
-				class="form-vertical required-validate" method="post"
-				enctype="multipart/form-data" onsubmit="saveMedia();">
+		
+		<form action="/acne/post_images" target="upload_target"
+			class="form-vertical required-validate" method="post"
+			enctype="multipart/form-data" onsubmit="saveMedia();">
+			<div class="row">
+				<h3>上传照片</h3>
 				<div class="col-lg-6 form-group">
-					<input type="file" class="file" data-show-upload="false"
-						data-show-preview="true">
+					<input type="file" class="file" data-show-upload="false" data-browse-label="选择图片"
+					 data-browse-icon = "<i class='glyphicon glyphicon-picture'></i>"
+						id="file_upload" data-show-preview="false">
 					<p class="help-block">支持jpg、jpeg、png、gif格式，大小不超过2.0M</p>
 				</div>
-				<div class="col-lg-6 form-group text-center">
-					<button id="upload_btn" type="submit" class="btn btn-default">上传</button>
+			</div>
+			<div class="row">
+				<div class="col-lg-6 form-group">	
+					<button id="upload_btn" type="submit" class="btn btn-success">上传</button>
 				</div>
-			</form>
+			</div>
+		</form>
 
-			<iframe id="upload_target" name="upload_target" src="#"
-				style="width: 0; height: 0; border: 0px solid #fff;"></iframe>
-		</div>
+		<iframe id="upload_target" name="upload_target" src="#"
+			style="width: 0; height: 0; border: 0px solid #fff;"></iframe>
 
 		<div class="row">
 			<h3>历史照片</h3>
@@ -122,7 +127,7 @@
 							Integer open = acneImage.getAuthorith();
 							String openStr = "";
 							String privateStr = "";
-							if(open == 1){
+							if (open == 1) {
 								openStr = "";
 								privateStr = "active";
 							} else {
@@ -131,10 +136,17 @@
 							}
 							SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 							out.print("<div style='display: block; vertical-align: text-bottom;'>上传于：" + format.format(date));
-							out.print("<div style='display: block; float: right; margin-bottom: 5px;' class='btn-group' data-toggle='buttons'><label class='btn btn-default "+openStr+"' onclick='onUpdate("+imageId+", \"open\");'><input type='radio' name='options' autocomplete='off'>公开</label><label class='btn btn-default "+privateStr+"' onclick='onUpdate("+imageId+", \"private\");'><input type='radio' name='options' autocomplete='off'>隐私</label>");
-							out.print("<label class='btn btn-default' onclick='onDelete("+imageId+")'><input type='radio' name='options' autocomplete='off'>删除</label>");
+							out.print(
+									"<div style='display: block; float: right; margin-bottom: 5px;' class='btn-group' data-toggle='buttons'><label class='btn btn-default "
+											+ openStr + "' onclick='onUpdate(" + imageId
+											+ ", \"open\");'><input type='radio' name='options' autocomplete='off'>公开</label><label class='btn btn-default "
+											+ privateStr + "' onclick='onUpdate(" + imageId
+											+ ", \"private\");'><input type='radio' name='options' autocomplete='off'>隐私</label>");
+							out.print("<label class='btn btn-default' onclick='onDelete(" + imageId
+									+ ")'><input type='radio' name='options' autocomplete='off'>删除</label>");
 							out.print("</div></div>");
-							out.print("<img alt='Card image cap' style='height: 280px; width: 360px;' src='/acne/image/" + acneImage.getPath() + "'>");
+							out.print("<img alt='Card image cap' style='height: 280px; width: 360px;' src='/acne/image/"
+									+ acneImage.getPath() + "'>");
 							out.print("</div>");
 							out.print("<div style='font-size: 14px; color: #ababab;'>简述：" + acneImage.getDesc() + "</div>");
 							out.print("</div>");
@@ -142,11 +154,15 @@
 								out.print("</div><br /><br />");
 							}
 						}
+						if(acneImages.size() == 0){	
+							out.print("<div style='font-size: 16px; color: #999999;'><h3>无照片可以显示</h3></div>");
+						}
 					}
 				%>
 			</div>
 		</div>
 
+		<br />
 		<footer class="footer">
 			<p>&copy; Company 2017</p>
 		</footer>
@@ -168,7 +184,10 @@
 		$(document).ready(function() {
 			$('#file_upload').fileinput({
 				language : 'zh',
+				browseLabel: "选择图片",
+		        browseIcon: "<i class=\"glyphicon glyphicon-picture\"></i> ",
 				allowedFileExtensions : [ 'jpg', 'png', 'gif' ],
+				showPreview : false,
 				allowedPreviewTypes : [ 'image' ],
 				dropZoneEnabled : true,
 				showUpload : true,

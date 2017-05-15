@@ -37,6 +37,14 @@
 
 					<p>
 					<div class="input-group">
+						<span class="input-group-addon">用户名：</span> <input
+							id="register-username" type="text" class="form-control"
+							placeholder="用户名" aria-describedby="register-username">
+					</div>
+					</p>
+
+					<p>
+					<div class="input-group">
 						<span class="input-group-addon" id="phone_number">手机号码：</span> <input
 							id="register-phone" type="number" class="form-control"
 							placeholder="+86-" aria-describedby="phone_number">
@@ -45,14 +53,14 @@
 
 					<div class="input-group">
 						<span class="input-group-addon" id="password">输入密码：</span> <input
-							type="text" class="form-control" placeholder="至少6位"
+							id="register-password" class="form-control" placeholder="至少6位" type="password"
 							aria-describedby="password">
 					</div>
 					</p>
 
 					<div class="input-group">
 						<span class="input-group-addon" id="conform_password">确认密码：</span>
-						<input type="text" class="form-control" placeholder="至少6位"
+						<input type="password" class="form-control" placeholder="至少6位" id="conform-password"
 							aria-describedby="conform_password">
 					</div>
 					</p>
@@ -80,55 +88,12 @@
 		</div>
 	</div>
 
-	<%
-		Object userType = request.getAttribute("userType");
-		if (userType != null) {
-			request.getSession().setAttribute("userType", userType.toString());
-		} else {
-			request.getSession().removeAttribute("userType");
-		}
-		Object result = request.getAttribute("result");
-		if (result != null) {
-			if (result.toString().indexOf("username") == -1) {
-				out.println(result.toString());
-				return;
-			}
-
-			JSONObject resultJsonObj = new JSONObject(result.toString());
-
-			String username = resultJsonObj.getString("username");
-			String phone = resultJsonObj.getString("phone");
-			Long userId = resultJsonObj.getLong("userid");
-			int available = resultJsonObj.getInt("available");
-			String avatar = resultJsonObj.getString("avatar");
-			String registerDate = resultJsonObj.getString("registerdate");
-			String desc = resultJsonObj.getString("description");
-			request.getSession().setAttribute("userId", userId);
-			request.getSession().setAttribute("username", username);
-			request.getSession().setAttribute("phone", phone);
-			request.getSession().setAttribute("avatar", avatar);
-			request.getSession().setAttribute("registerDate", registerDate);
-			request.getSession().setAttribute("available", available);
-			request.getSession().setAttribute("description", desc);
-
-			response.sendRedirect("/acne");
-		} else {
-			request.getSession().removeAttribute("userId");
-			request.getSession().removeAttribute("username");
-			request.getSession().removeAttribute("phone");
-			request.getSession().removeAttribute("available");
-			request.getSession().removeAttribute("avatar");
-			request.getSession().removeAttribute("registerDate");
-			request.getSession().removeAttribute("description");
-		}
-	%>
-
 	<div class="container">
 		<script>
 			function remember() {
-				
+
 				if (document.getElementById('remember-me').checked) {
-					
+
 					localStorage.remember = 'checked';
 					localStorage.phone = document.getElementById('inputPhone').value;
 					localStorage.password = document.getElementById('inputPassword').value;
@@ -144,26 +109,48 @@
 			}
 		</script>
 
-		<form class="form-signin" method="post" action="#" accept-charset="UTF-8">
+		<form class="form-signin" method="post" action="#"
+			accept-charset="UTF-8">
 			<h2 class="form-signin-heading">请输入手机号码登录</h2>
-			<label for="inputPhone" class="sr-only">手机号码</label> 
-			<input type="text" id="inputPhone" class="form-control" name="username" placeholder="手机号码" required autofocus> 
-			<label for="inputPassword" class="sr-only">密码</label> 
-			<input type="password" id="inputPassword" class="form-control" name="password" placeholder="密码" required>
+			<label for="inputPhone" class="sr-only">手机号码</label> <input
+				type="text" id="inputPhone" class="form-control" name="username"
+				placeholder="手机号码" required autofocus> <label
+				for="inputPassword" class="sr-only">密码</label> <input
+				type="password" id="inputPassword" class="form-control"
+				name="password" placeholder="密码" required>
 			<div>
-				<label class="radio-inline"> 
-					<input type="radio" checked="checked" name="userType" id="acne_user" value="acne_user">痘痘患者
-				</label> 
-				<label class="radio-inline"> 
-					<input type="radio" name="userType" id="anti_user" value="anti_user">治痘达人
+				<label class="radio-inline"> <input type="radio"
+					checked="checked" name="userType" id="acne_user" value="acne_user">痘痘患者
+				</label> <label class="radio-inline"> <input type="radio"
+					name="userType" id="anti_user" value="anti_user">治痘达人
 				</label>
 			</div>
-			<br /> 
-			<label> 
-				<input id="remember-me" type="checkbox" value="true" name="rememberMe" onclick="remember();"> 记住我
+			<br /> <label> <input id="remember-me" type="checkbox"
+				value="true" name="rememberMe" onclick="remember();"> 记住我
 			</label>
+
+			<div class="input-group" style="padding: 5px;">
+				<span class="input-group-addon"> 
+				<%
+ 					out.print("<div>");
+ 					Object validateCodeObj = request.getAttribute("validateCode");
+ 					if (validateCodeObj != null) {
+ 						String validatorString = validateCodeObj.toString();
+ 						for (int i = 0; i < validatorString.length(); i++) {
+ 							String name = validatorString.charAt(i) + ".gif";
+ 							out.print("<img src='res/img/" + name + "' alt='" + name + "'>");
+ 						}
+ 					}
+ 					out.print("</div>");
+ 				%>
+				</span> <input id="validate_code" type="text" class="form-control"
+					name="validateCode" placeholder="验证码"
+					aria-describedby="validate code">
+			</div>
+
 			<button class="btn btn-lg btn-primary btn-block" type="submit">登录</button>
-			<button id="btn_register" class="btn btn-lg btn-default btn-block" type="button" data-toggle="modal" data-target="#myModal">一键注册</button>
+			<button id="btn_register" class="btn btn-lg btn-default btn-block"
+				type="button" data-toggle="modal" data-target="#myModal">一键注册</button>
 		</form>
 
 	</div>
@@ -178,14 +165,42 @@
 
 				var phone = $('#register-phone').val();
 				var password = $('#register-password').val();
-				var userType = $("#input[name='userType0'][checked]").val();
-
+				var conform_password = $('#conform-password').val();
+				var userType = $("input[name='userType0']:checked").val();
+				var username = $('#register-username').val();
+				
+				if(username == ""){
+					alert('用户名不可为空！');
+					return;
+				}
+				
+				if(phone == "" || password == "" || conform_password == ""){
+					alert('电话或者密码不可为空！');
+					return;
+				}
+				if(phone.length != 11){
+					alert('电话为11位数字!');
+					return;
+				}
+				
+				if(password != conform_password){
+					alert('两次输入密码不一致!');
+					return;
+				}
+				
 				$.post('/acne/register_no_verify', {
+					username : username,
 					phone : phone,
-					password : password,
+					password : hex_md5(password),
 					userType : userType
 				}, function(data) {
-					console.log(data);
+					var message = JSON.parse(data);
+					if(message.message == 'success'){
+						$('#myModal').modal('hide');
+						
+						$('#inputPhone').val(phone);
+						$('#inputPassword').val(password);
+					}
 				});
 			});
 
@@ -195,8 +210,6 @@
 
 				var phone = $('#register-phone').val();
 				var userType = $("input[name='userType0'][checked]").val();
-
-				console.log(phone + userType);
 
 				$.get('/acne/send_code', {
 					phone : phone,

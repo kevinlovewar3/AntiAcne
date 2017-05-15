@@ -106,5 +106,12 @@ public class GoodsController {
 		JSONArray array = new JSONArray(goodsWithBLOBs);
 		return array.toString();
 	}
+	
+	@RequestMapping(value = "post_goods", method = RequestMethod.GET)
+	@ResponseBody
+	public ModelAndView postGoods(HttpServletRequest request, HttpServletResponse response){
+		ModelAndView mView = new ModelAndView("post_goods");
+		return mView;
+	}
 
 }

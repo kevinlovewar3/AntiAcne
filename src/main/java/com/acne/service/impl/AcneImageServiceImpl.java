@@ -18,8 +18,8 @@ public class AcneImageServiceImpl implements AcneImageService {
 	AcneImageMapper acneImageMapper;
 
 	@Override
-	public void postImages(String path, Long userId) {
-		acneImageMapper.postImages(path, userId);
+	public void postImages(String path, Long userId, String desc) {
+		acneImageMapper.postImages(path, userId, desc);
 	}
 
 	@Override

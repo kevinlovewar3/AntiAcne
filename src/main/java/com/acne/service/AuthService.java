@@ -2,6 +2,7 @@ package com.acne.service;
 
 import com.acne.model.AcneUser;
 import com.acne.model.AntiAcneUser;
+import com.acne.model.ValidatorImage;
 
 public interface AuthService {
 
@@ -18,4 +19,6 @@ public interface AuthService {
 	public void registerAcneUser(AcneUser acneUser);
 	
 	public void registerAntiUser(AntiAcneUser antiAcneUser);
+	
+	public ValidatorImage selectValidatorImageById();
 }

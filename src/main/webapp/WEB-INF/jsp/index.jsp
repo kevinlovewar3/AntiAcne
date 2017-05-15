@@ -1,3 +1,8 @@
+<%@page import="org.slf4j.LoggerFactory"%>
+<%@page import="org.slf4j.Logger"%>
+<%@page import="org.apache.shiro.subject.Subject"%>
+<%@page import="org.apache.shiro.SecurityUtils"%>
+<%@page import="org.apache.shiro.session.Session"%>
 <%@page import="java.text.SimpleDateFormat"%>
 <%@page import="java.net.URLDecoder"%>
 <%@page import="org.apache.jasper.tagplugins.jstl.core.ForEach"%>
@@ -7,7 +12,7 @@
 <%@page import="java.util.Date"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!DOCTYPE html>
 <html lang="zh">
 <head>
 <meta name="viewport"
@@ -19,11 +24,12 @@
 <title>精选博文</title>
 
 <!-- Bootstrap core CSS -->
-<link href="res/css/bootstrap.min.css" rel="stylesheet">
+<link href="res/css/bootstrap.min.css" type="text/css" rel="stylesheet">
 
 <!-- Custom styles for this template -->
-<link href="res/css/offcanvas.css" rel="stylesheet">
-<link href="res/css/narrow-jumbotron.css" rel="stylesheet">
+<link href="res/css/offcanvas.css" type="text/css" rel="stylesheet">
+<link href="res/css/narrow-jumbotron.css" type="text/css"
+	rel="stylesheet">
 </head>
 
 <body style="padding-top: 0px;">
@@ -73,37 +79,52 @@
 								Object acneNumObj = request.getAttribute("acneNum");
 								Object antiNumObj = request.getAttribute("antiNum");
 
-								Object userType = request.getSession().getAttribute("userType");
-								if (userType != null) {
-									if (userType.toString().equalsIgnoreCase("acne_user")) {
-										out.print("<li role='presentation' class='dropdown'>");
-										out.print(
-												"<a class='dropdown-toggle' data-toggle='dropdown' href='#' role='button' aria-haspopup='true' aria-expanded='false'>");
-										String username = request.getSession().getAttribute("username").toString();
-										out.print(username);
-										out.print("<span class='caret'></span>");
-										out.print("</a>");
-										out.print("<ul class='dropdown-menu'>");
-										out.print("<li style='margin: 0 auto;'><a href='/acne/acneuser'>个人首页</a></li>");
-										out.print("<li style='margin: 0 auto;'><a href='/acne/post_images'>自拍上传</a></li>");
-										out.print("<li style='margin: 0 auto;'><a href='/acne/logout'>注销</a></li>");
-										out.print("</ul></li>");
-									}
-									if (userType.toString().equalsIgnoreCase("anti_user")) {
-										out.print("<li role='presentation' class='dropdown'>");
-										out.print(
-												"<a class='dropdown-toggle' data-toggle='dropdown' href='#' role='button' aria-haspopup='true' aria-expanded='false'>");
-										String username = request.getSession().getAttribute("username").toString();
-										out.print(username);
-										out.print("<span class='caret'></span>");
-										out.print("</a>");
-										out.print("<ul class='dropdown-menu'>");
-										out.print("<li style='margin: 0 auto;'><a href='/acne/antiuser'>个人首页</a></li>");
-										out.print("<li style='margin: 0 auto;'><a href='/acne/view_acne'>浏览痘痘患者</a></li>");
-										out.print("<li style='margin: 0 auto;'><a href='/acne/post_article'>写点博客</a></li>");
-										out.print("<li style='margin: 0 auto;'><a href='/acne/post_goods'>上传产品</a></li>");
-										out.print("<li style='margin: 0 auto;'><a href='/acne/logout'>注销</a></li>");
-										out.print("</ul></li>");
+								Logger logger = LoggerFactory.getLogger(this.getClass());
+								Subject subject = SecurityUtils.getSubject();
+
+								if (subject.isAuthenticated()) {
+									logger.info("subject authenticated.");
+								} else {
+									logger.info("subject not authenticated.");
+								}
+
+								Session shiroSession = subject.getSession(false);
+								if (shiroSession != null) {
+									Object userType = shiroSession.getAttribute("userType");
+									if (userType != null) {
+										if (userType.toString().equalsIgnoreCase("acne_user")) {
+											out.print("<li role='presentation' class='dropdown'>");
+											out.print(
+													"<a class='dropdown-toggle' data-toggle='dropdown' href='#' role='button' aria-haspopup='true' aria-expanded='false'>");
+											String username = request.getSession().getAttribute("username").toString();
+											out.print(username);
+											out.print("<span class='caret'></span>");
+											out.print("</a>");
+											out.print("<ul class='dropdown-menu'>");
+											out.print("<li style='margin: 0 auto;'><a href='/acne/acneuser'>个人首页</a></li>");
+											out.print("<li style='margin: 0 auto;'><a href='/acne/post_images'>自拍上传</a></li>");
+											out.print("<li style='margin: 0 auto;'><a href='/acne/anti_recommands'>推荐专家</a></li>");
+											out.print("<li style='margin: 0 auto;'><a href='/acne/logout'>注销</a></li>");
+											out.print("</ul></li>");
+										}
+										if (userType.toString().equalsIgnoreCase("anti_user")) {
+											out.print("<li role='presentation' class='dropdown'>");
+											out.print(
+													"<a class='dropdown-toggle' data-toggle='dropdown' href='#' role='button' aria-haspopup='true' aria-expanded='false'>");
+											String username = request.getSession().getAttribute("username").toString();
+											out.print(username);
+											out.print("<span class='caret'></span>");
+											out.print("</a>");
+											out.print("<ul class='dropdown-menu'>");
+											out.print("<li style='margin: 0 auto;'><a href='/acne/antiuser'>个人首页</a></li>");
+											out.print("<li style='margin: 0 auto;'><a href='/acne/view_acne'>浏览痘痘患者</a></li>");
+											out.print("<li style='margin: 0 auto;'><a href='/acne/post_article'>写点博客</a></li>");
+											out.print("<li style='margin: 0 auto;'><a href='/acne/post_goods'>上传产品</a></li>");
+											out.print("<li style='margin: 0 auto;'><a href='/acne/logout'>注销</a></li>");
+											out.print("</ul></li>");
+										}
+									} else {
+										out.print("<li role='presentation'><a href='/acne/login'>个人信息</a></li>");
 									}
 								} else {
 									out.print("<li role='presentation'><a href='/acne/login'>个人信息</a></li>");
@@ -120,24 +141,24 @@
 
 
 	<div class="container">
-
 		<div class="row row-offcanvas row-offcanvas-right">
-
 			<div style="width: 100%; height: 40px;"></div>
-
 			<div class="col-12 col-md-9">
-
 				<div class="jumbotron">
 					<h2>重要通知</h2>
 					<p>
-						请大家查看小编精心挑选的博文，并留下宝贵的意见。小编会坚持查找优质博文，同时为大家推荐物美价廉的产品。
-						同时大家可以把自己的照片上传，<b>您的信息不会泄露给任何人</b>。网站目前已有<%
-						out.print(antiNumObj.toString());
-					%>位达人注册，帮助您解决问题。
+						网站注册用户：<%
+						out.print(acneNumObj.toString());
+					%>
+						<%
+							out.print("<br />");
+						%>
+						护肤专业人员：<%
+							out.print(antiNumObj.toString());
+						%>
 					</p>
 				</div>
 				<div class="row">
-
 					<%
 						List<Article> list = (ArrayList) request.getAttribute("articles");
 						for (int i = 0; i < list.size(); i++) {
@@ -173,6 +194,11 @@
 							out.print("</div>");
 							out.print("</div>");
 						}
+						if (list.size() == 0) {
+							out.print("<div style='font-size: 20px; color: #999999;'>");
+							out.print("&nbsp;&nbsp;&nbsp;&nbsp;没有文章");
+							out.print("</div>");
+						}
 					%>
 				</div>
 				<!--/row-->
@@ -204,7 +230,7 @@
 
 				<br />
 				<p>
-					<b>推荐行家</b>
+					<b>推荐专家</b>
 				</p>
 				<div class="sidebar-offcanvas" id="sidebar2">
 					<div id="list-anti-users" class="list-group"></div>
@@ -221,40 +247,44 @@
 			<%
 				Integer pages = (Integer) request.getAttribute("pages");
 				Integer current = (Integer) request.getAttribute("current");
-				if (current > 1) {
-					out.print("<li class='enabled'><a href='/acne?pageNo=" + (current - 1)
-							+ "&pageSize=9'><span aria-hidden='true'>&laquo;</a></span></li>");
+				if (pages == 0) {
 				} else {
-					out.print("<li class='disabled'><span><span aria-hidden='true'>&laquo;</span></span></li>");
-				}
-				if (current >= 6 && pages > 10) {
-					for (int m = 5; m >= 1; m--) {
-						out.print("<li class='enabled'><a href='/acne?pageNo=" + (current - m) + "&pageSize=9'>"
-								+ (current - m) + "<span class='sr-only'>(current)</a></span></li>");
+					if (current > 1) {
+						out.print("<li class='enabled'><a href='/acne?pageNo=" + (current - 1)
+								+ "&pageSize=9'><span aria-hidden='true'>&laquo;</a></span></li>");
+					} else {
+						out.print("<li class='disabled'><span><span aria-hidden='true'>&laquo;</span></span></li>");
 					}
-					out.print("<li class='active'><span>" + current + "<span class='sr-only'>(current)</span></span></li>");
-					int next = (pages - current < 4) ? (pages - current) : 4;
-					for (int n = 1; n <= next; n++) {
-						out.print("<li class='enabled'><a href='/acne?pageNo=" + (current + n) + "&pageSize=9'>"
-								+ (current + n) + "<span class='sr-only'>(current)</a></span></li>");
-					}
-				} else {
-					int pageNum = pages >= 10 ? 10 : pages;
-					for (int i = 1; i <= pageNum; i++) {
-						if (current == i) {
-							out.print(
-									"<li class='active'><span>" + i + "<span class='sr-only'>(current)</span></span></li>");
-						} else {
-							out.print("<li class='enabled'><a href='/acne?pageNo=" + i + "&pageSize=9'>" + i
-									+ "<span class='sr-only'>(current)</a></span></li>");
+					if (current >= 6 && pages > 10) {
+						for (int m = 5; m >= 1; m--) {
+							out.print("<li class='enabled'><a href='/acne?pageNo=" + (current - m) + "&pageSize=9'>"
+									+ (current - m) + "<span class='sr-only'>(current)</a></span></li>");
+						}
+						out.print("<li class='active'><span>" + current
+								+ "<span class='sr-only'>(current)</span></span></li>");
+						int next = (pages - current < 4) ? (pages - current) : 4;
+						for (int n = 1; n <= next; n++) {
+							out.print("<li class='enabled'><a href='/acne?pageNo=" + (current + n) + "&pageSize=9'>"
+									+ (current + n) + "<span class='sr-only'>(current)</a></span></li>");
+						}
+					} else {
+						int pageNum = pages >= 10 ? 10 : pages;
+						for (int i = 1; i <= pageNum; i++) {
+							if (current == i) {
+								out.print("<li class='active'><span>" + i
+										+ "<span class='sr-only'>(current)</span></span></li>");
+							} else {
+								out.print("<li class='enabled'><a href='/acne?pageNo=" + i + "&pageSize=9'>" + i
+										+ "<span class='sr-only'>(current)</a></span></li>");
+							}
 						}
 					}
-				}
-				if (current >= pages) {
-					out.print("<li class='disabled'><span><span aria-hidden='true'>&raquo;</span></span></li>");
-				} else {
-					out.print("<li class='enabled'><a href='/acne?pageNo=" + (current + 1)
-							+ "&pageSize=9'><span aria-hidden='true'>&raquo;</a></span></li>");
+					if (current >= pages) {
+						out.print("<li class='disabled'><span><span aria-hidden='true'>&raquo;</span></span></li>");
+					} else {
+						out.print("<li class='enabled'><a href='/acne?pageNo=" + (current + 1)
+								+ "&pageSize=9'><span aria-hidden='true'>&raquo;</a></span></li>");
+					}
 				}
 			%>
 		</ul>
@@ -279,8 +309,7 @@
 	<script src="res/js/ie10-viewport-bug-workaround.js"></script>
 	<script src="res/js/offcanvas.js"></script>
 	<script charset="utf-8">
-		$(document).ready(
-						function() {
+		$(document).ready(function() {
 							$('#myModal').on('shown.bs.modal', function() {
 								$('#suggest').focus();
 							});
@@ -289,6 +318,11 @@
 								var userId =<%=request.getSession().getAttribute("userId")%>;
 								var userType ='<%=request.getSession().getAttribute("userType")%>';
 				var suggest = $('#text_suggest').val();
+
+				if (suggest == '') {
+					$('#myModal').modal('hide');
+					return;
+				}
 
 				$.post('/acne/post_suggest', {
 					userId : userId,
@@ -300,32 +334,60 @@
 			});
 
 			$.get('/acne/recommands', {
-				size :6
+				size : 6
 			}, function(data, status) {
-				$.each(data, function(index, obj) {
-					var title = obj.title.substr(0, 10);
-					$("#list-articles").append('<a href="/acne/article?articleId=' + obj.articleid + '" class="list-group-item">' + title + '</a>');
-				});
+				if (status == 'success') {
+					var recommand_html = '';
+
+					if (data.length == 0) {
+						recommand_html = '<div style="font-size: 15px; color: #999999;">无文章推荐</div>';
+					} else {
+						$.each(data, function(index, obj) {
+							var title = obj.title.substr(0, 10);
+							recommand_html += '<a href="/acne/article?articleId=' + obj.articleid + '" class="list-group-item">' + title + '</a>'
+						});
+					}
+					$("#list-articles").append(recommand_html);
+				}
+
 			});
-			
+
 			$.get('/acne/anti/recommands', function(data, status) {
 				if (status == 'success') {
 					var recommand_html = '';
-					data.forEach(function(value, index, arr) {
-						var userId = value.userid;
-						var avatar = value.avatar;
-						var username = value.username;
-						var desc = value.description;
-						var title = value.title;
-						var titles = title.split('|');
-					
-						recommand_html += '<div>';
-						recommand_html += '<a href="/acne/anti/userId='+userId+'" title="'+desc+'" class="thumbnail"><img style="width: 100px; height: 80px;" src="/acne/image/avatar/'+avatar+'" alt="avatar"></a>';
-						recommand_html += '<span><b>'+username+'</b></span>';
-						recommand_html += '<div class="tip"><span>'+titles[0]+'年护肤经验 '+titles[1]+'</span></div>';
-						recommand_html += '</div>';
-		
-					});
+
+					if (data.length == 0) {
+						recommand_html = '<div style="font-size: 15px; color: #999999;">无专家推荐</div>';
+					} else {
+						recommand_html += '<table>';
+						data.forEach(function(value, index, arr) {
+							var userId = value.userid;
+							var avatar = value.avatar;
+							var username = value.username;
+							var desc = value.description;
+							var title = value.title;
+							var titles = title.split('|');
+
+							if (avatar === undefined) {
+								avatar = 'res/img/default.png';
+							} else {
+								avatar = '/acne/image/avatar/' + avatar;
+							}
+
+							recommand_html += '<tr>';
+							recommand_html += '<td style="padding: 5px; width: 100px; height: 80px;">';
+							recommand_html += '<a href="/acne/anti/userId='+userId+'" title="'+desc+'" class="thumbnail"><img style="width: 100px; height: 80px;" src="'+avatar+'" alt="avatar"></a>';
+							recommand_html += '</td>';
+							recommand_html += '<td>';
+							recommand_html += '<span><b>' + username + '</b></span>';
+							recommand_html += '<div class="tip"><span>' + titles[0] + '年护肤经验<br />';
+							recommand_html += titles[1] + '</span></div>';
+							recommand_html += '</td>';
+							recommand_html += '</tr>';
+
+						});
+						recommand_html += '<table>';
+					}
 					$('#list-anti-users').html(recommand_html);
 				}
 			});

@@ -9,11 +9,31 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
 	<!-- 数据库保存的密码是使用MD5算法加密的，所以这里需要配置一个密码匹配对象 -->
-	<bean id="credentialsMatcher" class="org.apache.shiro.authc.credential.Md5CredentialsMatcher"></bean>
+	<bean id="credentialsMatcher" class="org.apache.shiro.authc.credential.Md5CredentialsMatcher">
+		<!--加密的策略
+		<property name="hashAlgorithmName" value="SHA1" />
+		加密的次数
+		<property name="hashIterations" value="10" />
+		-->
+		<!-- Shiro报错-[org.apache.shiro.mgt.AbstractRememberMeManager] - There was a failure while trying to retrieve remembered principals. -->
+		<property name="storedCredentialsHexEncoded" value="true" />
+	</bean>
 
 	<!-- 使用Shiro自带的JdbcRealm类 指定密码匹配所需要用到的加密对象 指定存储用户、角色、权限许可的数据源及相关查询语句 -->
 	<bean id="acneShiro" class="com.acne.service.impl.AcneShiro">
 		<property name="credentialsMatcher" ref="credentialsMatcher"></property>
+	</bean>
+
+	<!-- rememberMeManager管理器，写cookie，取出cookie生成用户信息 -->
+	<bean id="rememberMeManager" class="org.apache.shiro.web.mgt.CookieRememberMeManager">
+		<property name="cookie" ref="rememberMeCookie" />
+	</bean>
+	<!-- 记住我cookie -->
+	<bean id="rememberMeCookie" class="org.apache.shiro.web.servlet.SimpleCookie">
+		<!-- rememberMe是cookie的名字 -->
+		<constructor-arg value="rememberMe" />
+		<!-- 记住我cookie生效时间30天 -->
+		<property name="maxAge" value="2592000" />
 	</bean>
 
 	<!-- 配置权限管理器 -->
@@ -22,6 +42,8 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="realm" ref="acneShiro" />
 		<!-- 使用下面配置的缓存管理器 -->
 		<property name="cacheManager" ref="cacheManager" />
+		<!-- 记住我 -->
+		<property name="rememberMeManager" ref="rememberMeManager" />
 	</bean>
 
 	<!-- 配置shiro的过滤器工厂类，id- shiroFilter要和我们在web.xml中配置的过滤器一致 -->
@@ -34,17 +56,40 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="successUrl" value="/" />
 		<!-- 如果您请求的资源不再您的权限范围，则跳转到/403请求地址 -->
 		<property name="unauthorizedUrl" value="/403" />
+
 		<!-- 权限配置 -->
 		<property name="filterChainDefinitions">
 			<value>
 				<!-- anon表示此地址不需要任何权限即可访问 -->
-				/static/**=anon
-				<!-- perms[user:query]表示访问此连接需要权限为user:query的用户 -->
-				/user=perms[user:query]
-				<!-- roles[manager]表示访问此连接需要用户的角色为manager -->
-				/user/add=roles[manager]
-				/user/del/**=roles[admin]
-				/user/edit/**=roles[manager]
+				/res/css/**=anon
+				/res/js/**=anon
+				/res/img/**=anon
+				/res/images/**=anon
+				/images/**=anon
+				/css/**=anon
+				/js/**=anon
+				/img/**=anon
+				/jfreechart=anon
+				<!-- 提交建议 -->
+				/post_suggest=anon
+				<!-- 获取推荐祛痘达人 -->
+				/anti/recommands=anon
+				<!-- 推荐文章 -->
+				/recommands=anon
+				<!-- 浏览产品 -->
+				/goods=anon
+				<!-- 祛痘达人图片 -->
+				/anti/userId**=anon
+				<!-- 文章详情 -->
+				/article**=anon
+				<!-- 首页 -->
+				/=anon
+				<!-- 首页祛痘达人图片 -->
+				/image/**=anon
+				<!-- 注册 -->
+				/register_no_verify=anon
+				<!-- 退出 -->
+				/logout=logout
 				<!--所有的请求(除去配置的静态资源请求或请求地址为anon的请求)都要通过登录验证,如果未登录则跳到/login -->
 				/** = authc
 			</value>

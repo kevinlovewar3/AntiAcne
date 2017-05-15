@@ -2,7 +2,7 @@
 <%@page import="java.text.SimpleDateFormat"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!DOCTYPE html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta name="viewport"
@@ -108,7 +108,7 @@
 		Long userId = Long.parseLong(userIdStr);
 		String username = request.getSession().getAttribute("username").toString();
 		String phone = request.getSession().getAttribute("phone").toString();
-		String avatar = request.getSession().getAttribute("avatar").toString();
+		Object avatarObj = request.getSession().getAttribute("avatar");
 		String registerDate = request.getSession().getAttribute("registerDate").toString();
 		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		Date date = new Date(registerDate);
@@ -124,7 +124,8 @@
 					name="y1" value="0" /> <input type="hidden" name="x2" value="100" />
 				<input type="hidden" name="y2" value="100" /> <input
 					id="fileToUpload" name="fileToUpload" type="file" class="file"
-					data-show-preview="false" data-show-upload="false"
+					data-show-preview="false" data-show-upload="false" data-browse-label="选择图片"
+					 data-browse-icon = "<i class='glyphicon glyphicon-picture'></i>"
 					data-show-remove="false" data-style="width: 800px;" />
 				<div id="facediv"
 					style="display: block; z-index: 100; text-align: center; width: 100%;">
@@ -143,7 +144,7 @@
 		<ul class="nav nav-tabs">
 			<li role="presentation" class="active"><a href="#">个人首页</a></li>
 			<li role="presentation"><a href="/acne/post_images">自拍照片</a></li>
-			<li role="presentation"><a href="/acne/anti_recommands">推荐达人</a></li>
+			<li role="presentation"><a href="/acne/anti_recommands">推荐专家</a></li>
 		</ul>
 		<br />
 
@@ -152,9 +153,14 @@
 				<div class="col-lg-4">
 					<div class="avatar">
 						<%
+						String avatar = "";
+						if(avatarObj == null){
+							avatar = "res/img/default.png";
+						} else {
+							avatar = "/acne/image/avatar/" + avatarObj.toString();
+						}
 							out.print(
-									"<img id='user_avatar' alt='Avatar' class='thumbnail' style='width: 200px; height: 200px;' src='/acne/image/avatar/"
-											+ avatar + "'>");
+									"<img id='user_avatar' alt='Avatar' class='thumbnail' style='width: 200px; height: 200px;' src='"+avatar+"'>");
 						%>
 					</div>
 					<div id="dialog" class="btn-group btn-group-xs btn-primary"
@@ -236,10 +242,10 @@
 			<div class="col-lg-12">
 				<h4>推荐达人</h4>
 			</div>
-			<div id="anti_recommand" class="row"></div>
+			<div id="anti_recommand" class="row col-lg-12"></div>
 		</div>
 
-
+		<br />
 		<footer class="footer">
 		<p>&copy; Company 2017</p>
 		</footer>
@@ -325,28 +331,42 @@
 							var userId =<%=userId%>;
 							$.get('/acne/anti/recommands', function(data, status) {
 								if (status == 'success') {
-									var recommand_html = '';
-									data.forEach(function(value, index, arr) {
-										var userId = value.userid;
-										var avatar = value.avatar;
-										var username = value.username;
-										var desc = value.description;
+									console.log(data);
+									if(data === [] || data.length == 0){
+										$('#anti_recommand').html('<div style="font-size: 15px; color: #999999;">暂无推荐</div>');
+									} else {
+										var recommand_html = '';
+										data.forEach(function(value, index, arr) {
+											var userId = value.userid;
+											var avatar = value.avatar;
+											var username = value.username;
+											var desc = value.description;
+											
+											if(avatar === undefined){
+												avatar = 'res/img/default.png';
+											} else {
+												avatar = '/acne/image/avatar/' + avatar;
+											}
 
-										recommand_html += '<div class="col-xs-6 col-md-3">';
-										recommand_html += '<a href="/acne/anti/userId='+userId+'" class="thumbnail">';
-										recommand_html += '<img src="/acne/image/avatar/'+avatar+'", alt="'+desc+'">';
-										recommand_html += '</a></div>';
-									});
-									$('#anti_recommand').html(recommand_html);
+											recommand_html += '<div class="col-xs-3 col-md-6" style="height: 100px; width: 100px; padding: 5px;">';
+											recommand_html += '<a href="/acne/anti/userId='+userId+'" class="thumbnail">';
+											recommand_html += '<img src="'+avatar+'", alt="'+desc+'">';
+											recommand_html += '<div style="text-align: center; font-size: 15px; color: #4b503a;"><span><b>';
+											recommand_html += username;
+											recommand_html += '</b></span></div>';
+											recommand_html += '</a>';
+											recommand_html += '</div>';
+										});
+										$('#anti_recommand').html(recommand_html);
+									}	
 								}
 							});
 
 							$.get('/acne/article_hist', {
 								userId : userId
 							}, function(data, status) {
-
 								if (status == 'success') {
-									if (data === '[null]') {
+									if (data.length == 1 && data[0] === null){
 										$('#article_hist').html('<div style="font-size: 15px; color: #999999;">无浏览历史</div>');
 									} else {
 										var article_list_html = '';

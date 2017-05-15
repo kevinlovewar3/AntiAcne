@@ -30,6 +30,7 @@ import org.springframework.web.servlet.ModelAndView;
 import com.acne.constant.Constants;
 import com.acne.model.AcneUser;
 import com.acne.model.AntiAcneUser;
+import com.acne.model.ValidatorImage;
 import com.acne.service.AuthService;
 import com.acne.shiro.UserTypeAuthenticationToken;
 import com.acne.util.ObjectUtil;
@@ -70,9 +71,10 @@ public class AuthController {
 	 * @param request
 	 * @param response
 	 * @return
+	 * @throws IOException 
 	 */
 	@RequestMapping(value = "login", method = RequestMethod.POST)
-	public ModelAndView postLogin(HttpServletRequest request, HttpServletResponse response) {
+	public ModelAndView postLogin(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
 		ModelAndView mView = new ModelAndView();
 		String phone = request.getParameter("username");
@@ -81,26 +83,33 @@ public class AuthController {
 		String userType = request.getParameter("userType");
 		String rememberMe = request.getParameter("rememberMe");
 
+		Object loginFailure = request.getAttribute("shiroLoginFailure");
+		if (loginFailure != null) {
+			String msg = ObjectUtil.ObjectToString(loginFailure);
+			logger.info("random code error: {}", msg);
+			
+			return getLogin(request, response);
+		}
+
+		logger.info("parameters username: {}, password: {}, userType: {}", phone, password, userType);
+
 		boolean remMe = false;
 		try {
 			remMe = Boolean.parseBoolean(rememberMe);
 		} catch (Exception e) {
 			remMe = false;
 		}
-		
-		logger.info("parameters username: {}, password: {}, userType: {}", phone, password, userType);
 
 		UserTypeAuthenticationToken token = new UserTypeAuthenticationToken(phone, password.toCharArray(), userType);
-		token.setRememberMe(true);
+		token.setRememberMe(remMe);
 		Subject subject = SecurityUtils.getSubject();
 		String msg = null;
 		try {
 			if (subject.isAuthenticated()) {
-				mView.setViewName("index");
-				return mView;
-			} 
-			
-			token.setRememberMe(remMe);
+				response.sendRedirect("/acne/");
+				return null;
+			}
+
 			subject.login(token);
 		} catch (IncorrectCredentialsException e) {
 			msg = "登录密码错误. Password for account " + token.getPrincipal() + " was incorrect.";
@@ -112,7 +121,7 @@ public class AuthController {
 			msg = "帐号已被锁定. The account for username " + token.getPrincipal() + " was locked.";
 			logger.info("{}\n LockedAccountException: {}", msg, e);
 		} catch (DisabledAccountException e) {
-			msg = "帐号已被禁用. The account for username " + token.getPrincipal() + " was disabled.";	
+			msg = "帐号已被禁用. The account for username " + token.getPrincipal() + " was disabled.";
 			logger.info("{}\n DisabledAccountException: {}", msg, e);
 		} catch (ExpiredCredentialsException e) {
 			msg = "帐号已过期. the account for username " + token.getPrincipal() + "  was expired.";
@@ -138,8 +147,15 @@ public class AuthController {
 	@ResponseBody
 	public ModelAndView getLogin(HttpServletRequest request, HttpServletResponse response) {
 		ModelAndView mView = new ModelAndView("auth");
+
 		HttpSession session = request.getSession();
-		session.setAttribute("", "");
+		ValidatorImage validatorImage = authService.selectValidatorImageById();
+		session.setAttribute("validateCode", validatorImage.getValidatorvalue());
+		mView.addObject("validateCode", validatorImage.getValidatorname());
+
+		logger.info("get login page with avalidate code, name: {}, value: {}", validatorImage.getValidatorname(),
+				validatorImage.getValidatorvalue());
+
 		return mView;
 	}
 
@@ -213,10 +229,11 @@ public class AuthController {
 		String userType = request.getParameter("userType");
 		String phone = request.getParameter("phone");
 		String password = request.getParameter("password");
+		String username = request.getParameter("username");
 
 		if (userType == null || userType.equals(Constants.TYPE_ACNE)) {
 			AcneUser acneUser = new AcneUser();
-			acneUser.setUsername("");
+			acneUser.setUsername(username);
 			acneUser.setPhone(phone);
 			acneUser.setPassword(password);
 			acneUser.setAvailable(1);
@@ -225,9 +242,11 @@ public class AuthController {
 			authService.registerAcneUser(acneUser);
 		} else if (userType.equals(Constants.TYPE_ANTI)) {
 			AntiAcneUser antiAcneUser = new AntiAcneUser();
-			antiAcneUser.setUsername("");
+			antiAcneUser.setUsername(username);
 			antiAcneUser.setAvailable(1);
+			antiAcneUser.setPassword(password);
 			antiAcneUser.setPhone(phone);
+			antiAcneUser.setTitle("1|金牌会员");
 			antiAcneUser.setRegisterdate(new Date());
 			antiAcneUser.setDescription("新晋美肤大人一枚");
 			authService.registerAntiUser(antiAcneUser);

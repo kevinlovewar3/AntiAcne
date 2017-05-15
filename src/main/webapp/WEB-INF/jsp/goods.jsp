@@ -3,7 +3,7 @@
 <%@page import="java.util.List"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!DOCTYPE html>
 <html>
 <head>
 <meta name="viewport"
@@ -55,6 +55,11 @@
 						out.print("</p>");
 						out.print("</div>");
 					}
+					if (list.size() == 0) {
+						out.print("<div style='font-size: 30px; color: #999999;'>");
+						out.print("没有产品展示");
+						out.print("</div>");
+					}
 				%>
 			</div>
 
@@ -63,40 +68,44 @@
 				<%
 					Integer pages = (Integer) request.getAttribute("pages");
 					Integer current = (Integer) request.getAttribute("current");
-					if (current > 1) {
-						out.print("<li class='enabled'><a href='/acne/goods?pageNo=" + (current - 1)
-								+ "&pageSize=9'><span aria-hidden='true'>&laquo;</a></span></li>");
+					if (pages == 0) {
 					} else {
-						out.print("<li class='disabled'><span><span aria-hidden='true'>&laquo;</span></span></li>");
-					}
-					if (current >= 6 && pages > 10) {
-						for (int m = 5; m >= 1; m--) {
-							out.print("<li class='enabled'><a href='/acne/goods?pageNo=" + (current - m) + "&pageSize=9'>"
-									+ (current - m) + "<span class='sr-only'>(current)</a></span></li>");
+						if (current > 1) {
+							out.print("<li class='enabled'><a href='/acne/goods?pageNo=" + (current - 1)
+									+ "&pageSize=9'><span aria-hidden='true'>&laquo;</a></span></li>");
+						} else {
+							out.print("<li class='disabled'><span><span aria-hidden='true'>&laquo;</span></span></li>");
 						}
-						out.print("<li class='active'><span>" + current + "<span class='sr-only'>(current)</span></span></li>");
-						int next = (pages - current < 4) ? (pages - current) : 4;
-						for (int n = 1; n <= next; n++) {
-							out.print("<li class='enabled'><a href='/acne/goods?pageNo=" + (current + n) + "&pageSize=9'>"
-									+ (current + n) + "<span class='sr-only'>(current)</a></span></li>");
-						}
-					} else {
-						int pageNum = pages >= 10 ? 10 : pages;
-						for (int i = 1; i <= pageNum; i++) {
-							if (current == i) {
-								out.print(
-										"<li class='active'><span>" + i + "<span class='sr-only'>(current)</span></span></li>");
-							} else {
-								out.print("<li class='enabled'><a href='/acne/goods?pageNo=" + i + "&pageSize=9'>" + i
-										+ "<span class='sr-only'>(current)</a></span></li>");
+						if (current >= 6 && pages > 10) {
+							for (int m = 5; m >= 1; m--) {
+								out.print("<li class='enabled'><a href='/acne/goods?pageNo=" + (current - m) + "&pageSize=9'>"
+										+ (current - m) + "<span class='sr-only'>(current)</a></span></li>");
+							}
+							out.print("<li class='active'><span>" + current
+									+ "<span class='sr-only'>(current)</span></span></li>");
+							int next = (pages - current < 4) ? (pages - current) : 4;
+							for (int n = 1; n <= next; n++) {
+								out.print("<li class='enabled'><a href='/acne/goods?pageNo=" + (current + n) + "&pageSize=9'>"
+										+ (current + n) + "<span class='sr-only'>(current)</a></span></li>");
+							}
+						} else {
+							int pageNum = pages >= 10 ? 10 : pages;
+							for (int i = 1; i <= pageNum; i++) {
+								if (current == i) {
+									out.print("<li class='active'><span>" + i
+											+ "<span class='sr-only'>(current)</span></span></li>");
+								} else {
+									out.print("<li class='enabled'><a href='/acne/goods?pageNo=" + i + "&pageSize=9'>" + i
+											+ "<span class='sr-only'>(current)</a></span></li>");
+								}
 							}
 						}
-					}
-					if (current >= pages) {
-						out.print("<li class='disabled'><span><span aria-hidden='true'>&raquo;</span></span></li>");
-					} else {
-						out.print("<li class='enabled'><a href='/acne/goods?pageNo=" + (current + 1)
-								+ "&pageSize=9'><span aria-hidden='true'>&raquo;</a></span></li>");
+						if (current >= pages) {
+							out.print("<li class='disabled'><span><span aria-hidden='true'>&raquo;</span></span></li>");
+						} else {
+							out.print("<li class='enabled'><a href='/acne/goods?pageNo=" + (current + 1)
+									+ "&pageSize=9'><span aria-hidden='true'>&raquo;</a></span></li>");
+						}
 					}
 				%>
 			</ul>
@@ -107,13 +116,7 @@
 	<footer class="text-muted">
 	<div class="container">
 		<p class="float-right">
-			<a href="#">Back to top</a>
-		</p>
-		<p>Album example is &copy; Bootstrap, but please download and
-			customize it for yourself!</p>
-		<p>
-			New to Bootstrap? <a href="../../">Visit the homepage</a> or read our
-			<a href="../../getting-started/">getting started guide</a>.
+			<a href="/acne/">返回首页</a>.
 		</p>
 	</div>
 	</footer>
@@ -123,9 +126,7 @@
 	<!-- Placed at the end of the document so the pages load faster -->
 	<script src="res/js/jquery-3.1.1.slim.min.js"></script>
 	<script>
-		window.jQuery
-				|| document
-						.write('<script src="res/js/jquery-3.1.1.min.js"><\/script>')
+		window.jQuery || document.write('<script src="res/js/jquery-3.1.1.min.js"><\/script>')
 	</script>
 	<script
 		src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js"

@@ -13,6 +13,8 @@
 
 <!-- Bootstrap core CSS -->
 <link href="res/css/bootstrap.min.css" rel="stylesheet">
+<!-- Custom styles for this template -->
+<link href="res/css/narrow-jumbotron.css" rel="stylesheet">
 
 </head>
 
@@ -39,8 +41,7 @@
 			</div>
 		</div>
 
-
-
+		<br />		
 		<footer class="footer">
 		<p>&copy; Company 2017</p>
 		</footer>
@@ -62,7 +63,7 @@
 			$.get('/acne/posted_article', function(data, status) {
 
 				if (status == 'success') {
-					if (data === '[null]') {
+					if (data.length == 0 || data == []) {
 						$('#article_hist').html('<div style="font-size: 15px; color: #999999;">未发表文章</div>');
 					} else {
 						var article_list_html = '';

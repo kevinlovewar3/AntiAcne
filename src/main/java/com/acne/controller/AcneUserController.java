@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -274,6 +275,11 @@ public class AcneUserController {
 		Object userIdObj = request.getSession().getAttribute("userId");
 		Long userId = ObjectUtil.ObjectToLong(userIdObj);
 
+		String description = request.getParameter("description");
+		if (description == null) {
+			description = "";
+		}
+		
 		if (file != null) {
 			int position = file.getOriginalFilename().lastIndexOf(".");
 			String append = file.getOriginalFilename().substring(position, file.getOriginalFilename().length());
@@ -293,7 +299,7 @@ public class AcneUserController {
 			}
 			file.transferTo(new File(path));
 
-			acneImageService.postImages(fileName, userId);
+			acneImageService.postImages(fileName, userId, description);
 			return MSG_SUCCESS;
 		}
 		return MSG_FAILED;

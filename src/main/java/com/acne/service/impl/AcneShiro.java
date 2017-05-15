@@ -46,8 +46,6 @@ public class AcneShiro extends AuthorizingRealm {
 			String userType = userTypeAuthenticationToken.getUserType();
 			String username = userTypeAuthenticationToken.getUsername();
 			String password = new String(userTypeAuthenticationToken.getPassword());
-			boolean isRememberMe = userTypeAuthenticationToken.isRememberMe();
-			System.out.println("" + isRememberMe);
 			password = DigestUtils.md5DigestAsHex(password.getBytes());
 			
 			if (userType.equals(Constants.TYPE_ACNE)) {
