@@ -65,10 +65,13 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 				/res/js/**=anon
 				/res/img/**=anon
 				/res/images/**=anon
+				/res/fonts/**=anon
 				/images/**=anon
 				/css/**=anon
 				/js/**=anon
 				/img/**=anon
+				<!-- 作者的文章 -->
+				/anti/article_list**=anon
 				/jfreechart=anon
 				<!-- 提交建议 -->
 				/post_suggest=anon

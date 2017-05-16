@@ -5,6 +5,10 @@ public class Constants {
 	static {
 		String platform = System.getProperty("os.name");
 		
+		System.out.println("----------------------------------------------------------------------------");
+		System.out.println(platform);
+		System.out.println("----------------------------------------------------------------------------");
+		
 		if (platform.indexOf("Linux") != -1) {
 			IMAGE_PATH = "/home/cisco/images/";
 			AVATAR_PATH = "/home/cisco/avatars/";

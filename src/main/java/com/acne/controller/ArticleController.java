@@ -27,6 +27,7 @@ import com.acne.model.Article;
 import com.acne.service.AcneUserService;
 import com.acne.service.ArticleService;
 import com.acne.util.ObjectUtil;
+import com.acne.util.StringUtil;
 import com.github.pagehelper.PageInfo;
 
 @Controller
@@ -229,6 +230,15 @@ public class ArticleController {
 	@ResponseBody
 	public String articleOption(HttpServletRequest request, HttpServletResponse response) {
 		return postArticleHist(request, response);
+	}
+	
+	@RequestMapping(value = "article", method = RequestMethod.DELETE)
+	@ResponseBody
+	public String deleteArticle(HttpServletRequest request, HttpServletResponse response) {
+		
+		String articleId = request.getParameter("articleId");
+		articleService.deleteByPrimaryKey(StringUtil.StringToLong(articleId));
+		return MSG_SUCCESS;
 	}
 
 	/**

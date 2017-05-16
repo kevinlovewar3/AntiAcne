@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.acne.application.AcneApplicationCtx;
 import com.acne.constant.Constants;
 import com.acne.model.AcneUser;
 import com.acne.model.AntiAcneUser;
@@ -48,6 +49,9 @@ public class AuthController {
 
 	@Autowired
 	AuthService authService;
+	
+	@Autowired
+	AcneApplicationCtx applicationCtx;
 
 	private static final String MSG_SUCCESS = "{\"message\":\"success\"}";
 
@@ -239,7 +243,9 @@ public class AuthController {
 			acneUser.setAvailable(1);
 			acneUser.setRegisterdate(new Date());
 			acneUser.setDescription("新晋美肤成员一枚");
+			
 			authService.registerAcneUser(acneUser);
+			applicationCtx.increaseAcneNum();
 		} else if (userType.equals(Constants.TYPE_ANTI)) {
 			AntiAcneUser antiAcneUser = new AntiAcneUser();
 			antiAcneUser.setUsername(username);
@@ -250,6 +256,7 @@ public class AuthController {
 			antiAcneUser.setRegisterdate(new Date());
 			antiAcneUser.setDescription("新晋美肤大人一枚");
 			authService.registerAntiUser(antiAcneUser);
+			applicationCtx.increaseAntiNum();
 		} else {
 			return MSG_ERROR_USERTYPE;
 		}

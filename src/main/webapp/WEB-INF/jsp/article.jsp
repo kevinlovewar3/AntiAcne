@@ -98,34 +98,17 @@
 				<div class="sidebar-module sidebar-module-inset">
 					<h4>关于作者</h4>
 					<%
-						String avatar = map.get("avatar").toString();
-						out.print("<img id='img_avatar' class='thumbnail' src='/acne/image/avatar/" + avatar
+						Object avatarObj = map.get("avatar");
+						String avatar = "";
+						if(avatarObj == null){
+							avatar = "res/img/default.png";
+						} else {
+							avatar = "/acne/image/avatar/" + avatarObj.toString();
+						}
+						out.print("<img id='img_avatar' class='thumbnail' src='" + avatar
 								+ "' alt='Avatar' style='overflow: hidden, width: 120px; height: 120px;'/>");
 					%>
 						<em> <%
- 	/**
- 	Get article: 
- 	{
- 	upTimes=14, 
- 	articleId=2, 
- 	publishDate=2017-05-02 01:16:23.0, 
- 	available=1, 
- 	antiArticleId=37, 
- 	description=资深抗痘人士, 
- 	antiUserId=1, 
- 	avatar=avatar.png, 
- 	title=如何去痘痘？, 
- 	downTimes=12, 
- 	userId=1, 
- 	content=1.不要用手去挤压, 
- 	password=e10adc3949ba59abbe56e057f20f883e, 
- 	phone=13774231926, 
- 	viewTimes=126, 
- 	username=安炎炎, 
- 	registerDate=2017-03-15 08:18:01.0
- 	}
- 	*/
-
  	if (map != null) {
  		String username = map.get("username").toString();
  		out.print(username);
@@ -206,14 +189,17 @@
 							$.get('/acne/anti/article_list', {
 								articleId : articleId
 							}, function(data, status) {
+								if(status == 'success'){
+									var article_list_html = '';
 
-								var article_list_html = '';
-								$.each(data, function(index, obj) {
-									var title = obj.title.substr(0, 10);
-									var articleId = obj.articleid;
-									article_list_html += '<li><a href="/acne/article?articleId=' + articleId + '">' + title + '</a></li>';
-								});
-								$('#article_list').html(article_list_html);
+									$.each(data, function(index, obj) {
+										var title = obj.title.substr(0, 10);
+										var articleId = obj.articleid;
+										article_list_html += '<li><a href="/acne/article?articleId=' + articleId + '">' + title + '</a></li>';
+									});
+									$('#article_list').html(article_list_html);	
+								}
+								
 							});
 
 							$.post('/acne/article_hist', {
@@ -230,7 +216,7 @@
 										$('#upTimebtn').tooltip('show');
 										setTimeout(function() {
 											$('#upTimebtn').tooltip('destroy');
-										}, 2500);
+										}, 2000);
 									}
 								});
 							});
@@ -241,7 +227,7 @@
 										$('#downTimebtn').tooltip('show');
 										setTimeout(function() {
 											$('#downTimebtn').tooltip('destroy');
-										}, 2500);
+										}, 2000);
 									}
 								});
 							});

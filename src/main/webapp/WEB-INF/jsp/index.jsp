@@ -1,5 +1,5 @@
+<%@page import="com.acne.util.HtmlRegexpUtil"%>
 <%@page import="org.slf4j.LoggerFactory"%>
-<%@page import="org.slf4j.Logger"%>
 <%@page import="org.apache.shiro.subject.Subject"%>
 <%@page import="org.apache.shiro.SecurityUtils"%>
 <%@page import="org.apache.shiro.session.Session"%>
@@ -15,10 +15,10 @@
 <!DOCTYPE html>
 <html lang="zh">
 <head>
-<meta name="viewport"
-	content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<meta name="description" content="">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <meta name="author" content="">
+<meta name="keywords" content="护肤 祛痘 祛痘印 祛黑头 去痘 去痘印 去黑头 补水 控油">
+<meta name="description" content="SKIN FRESH是一个优质护肤文章、护肤产品信息共享的平台。护肤专家根据用户提供的详细信息做出针对性的护肤建议。">
 <link rel="icon" href="res/images/favicon.ico">
 
 <title>精选博文</title>
@@ -30,9 +30,16 @@
 <link href="res/css/offcanvas.css" type="text/css" rel="stylesheet">
 <link href="res/css/narrow-jumbotron.css" type="text/css"
 	rel="stylesheet">
+
+<style type="text/css">
+body {
+	padding-top: 0px;
+}
+</style>
+
 </head>
 
-<body style="padding-top: 0px;">
+<body>
 
 	<div class="modal fade" tabindex="-1" role="dialog" id="myModal">
 		<div class="modal-dialog" role="document">
@@ -64,148 +71,141 @@
 	</div>
 	<!-- /.modal -->
 
-	<div
-		style="width: 100%; height: 100px; vertical-align: middle; background-color: #ddd; display: inline-block; text-align: center;">
+	<nav class="navbar navbar-expand-md navbar-inverse bg-inverse mb-4"
+		style="padding-left: 20%; padding-right: 20%;">
+		<a class="navbar-brand" href="#">SKIN FRESH</a>
+		<ul class="nav nav-pills" style="margin: 5px;">
+			<li role="presentation" class="active"><a href="#">精选博文</a></li>
+			<li role="presentation"><a href="/acne/goods">产品分析</a></li>
+			<%
+				Object acneNumObj = request.getAttribute("acneNum");
+				Object antiNumObj = request.getAttribute("antiNum");
 
-		<div style="width: 100%; height: 100%;">
-			<table border="0" width=100% height=100%>
-				<tr align=center valign=middle>
-					<td style="width: 50%"><span><h1>SKIN FRESH</h1></span></td>
-					<td style="width: 50%">
-						<ul class="nav nav-pills">
-							<li role="presentation" class="active"><a href="#">精选博文</a></li>
-							<li role="presentation"><a href="/acne/goods">产品分析</a></li>
-							<%
-								Object acneNumObj = request.getAttribute("acneNum");
-								Object antiNumObj = request.getAttribute("antiNum");
-
-								Logger logger = LoggerFactory.getLogger(this.getClass());
-								Subject subject = SecurityUtils.getSubject();
-
-								if (subject.isAuthenticated()) {
-									logger.info("subject authenticated.");
-								} else {
-									logger.info("subject not authenticated.");
-								}
-
-								Session shiroSession = subject.getSession(false);
-								if (shiroSession != null) {
-									Object userType = shiroSession.getAttribute("userType");
-									if (userType != null) {
-										if (userType.toString().equalsIgnoreCase("acne_user")) {
-											out.print("<li role='presentation' class='dropdown'>");
-											out.print(
-													"<a class='dropdown-toggle' data-toggle='dropdown' href='#' role='button' aria-haspopup='true' aria-expanded='false'>");
-											String username = request.getSession().getAttribute("username").toString();
-											out.print(username);
-											out.print("<span class='caret'></span>");
-											out.print("</a>");
-											out.print("<ul class='dropdown-menu'>");
-											out.print("<li style='margin: 0 auto;'><a href='/acne/acneuser'>个人首页</a></li>");
-											out.print("<li style='margin: 0 auto;'><a href='/acne/post_images'>自拍上传</a></li>");
-											out.print("<li style='margin: 0 auto;'><a href='/acne/anti_recommands'>推荐专家</a></li>");
-											out.print("<li style='margin: 0 auto;'><a href='/acne/logout'>注销</a></li>");
-											out.print("</ul></li>");
-										}
-										if (userType.toString().equalsIgnoreCase("anti_user")) {
-											out.print("<li role='presentation' class='dropdown'>");
-											out.print(
-													"<a class='dropdown-toggle' data-toggle='dropdown' href='#' role='button' aria-haspopup='true' aria-expanded='false'>");
-											String username = request.getSession().getAttribute("username").toString();
-											out.print(username);
-											out.print("<span class='caret'></span>");
-											out.print("</a>");
-											out.print("<ul class='dropdown-menu'>");
-											out.print("<li style='margin: 0 auto;'><a href='/acne/antiuser'>个人首页</a></li>");
-											out.print("<li style='margin: 0 auto;'><a href='/acne/view_acne'>浏览痘痘患者</a></li>");
-											out.print("<li style='margin: 0 auto;'><a href='/acne/post_article'>写点博客</a></li>");
-											out.print("<li style='margin: 0 auto;'><a href='/acne/post_goods'>上传产品</a></li>");
-											out.print("<li style='margin: 0 auto;'><a href='/acne/logout'>注销</a></li>");
-											out.print("</ul></li>");
-										}
-									} else {
-										out.print("<li role='presentation'><a href='/acne/login'>个人信息</a></li>");
-									}
-								} else {
-									out.print("<li role='presentation'><a href='/acne/login'>个人信息</a></li>");
-								}
-							%>
-							<li role="presentation"><a data-toggle="modal"
-								data-target="#myModal">网站建议</a></li>
-						</ul>
-					</td>
-				</tr>
-			</table>
-		</div>
-	</div>
-
+				Subject subject = SecurityUtils.getSubject();
+				Session shiroSession = subject.getSession(false);
+				if (shiroSession != null) {
+					Object userType = shiroSession.getAttribute("userType");
+					if (userType != null) {
+						if (userType.toString().equalsIgnoreCase("acne_user")) {
+							out.print("<li role='presentation' class='dropdown'>");
+							out.print(
+									"<a class='dropdown-toggle' data-toggle='dropdown' href='#' role='button' aria-haspopup='true' aria-expanded='false'>");
+							String username = request.getSession().getAttribute("username").toString();
+							out.print(username);
+							out.print("<span class='caret'></span>");
+							out.print("</a>");
+							out.print("<ul class='dropdown-menu'>");
+							out.print("<li style='margin: 0 auto;'><a href='/acne/acneuser'>个人首页</a></li>");
+							out.print("<li style='margin: 0 auto;'><a href='/acne/post_images'>自拍上传</a></li>");
+							out.print("<li style='margin: 0 auto;'><a href='/acne/anti_recommands'>推荐专家</a></li>");
+							out.print("<li style='margin: 0 auto;'><a href='/acne/logout'>注销</a></li>");
+							out.print("</ul></li>");
+						}
+						if (userType.toString().equalsIgnoreCase("anti_user")) {
+							out.print("<li role='presentation' class='dropdown'>");
+							out.print(
+									"<a class='dropdown-toggle' data-toggle='dropdown' href='#' role='button' aria-haspopup='true' aria-expanded='false'>");
+							String username = request.getSession().getAttribute("username").toString();
+							out.print(username);
+							out.print("<span class='caret'></span>");
+							out.print("</a>");
+							out.print("<ul class='dropdown-menu'>");
+							out.print("<li style='margin: 0 auto;'><a href='/acne/antiuser'>个人首页</a></li>");
+							out.print("<li style='margin: 0 auto;'><a href='/acne/view_acne'>用户查看</a></li>");
+							out.print("<li style='margin: 0 auto;'><a href='/acne/post_article'>写点博客</a></li>");
+							out.print("<li style='margin: 0 auto;'><a href='/acne/post_goods'>上传产品</a></li>");
+							out.print("<li style='margin: 0 auto;'><a href='/acne/logout'>注销</a></li>");
+							out.print("</ul></li>");
+						}
+					} else {
+						out.print("<li role='presentation'><a href='/acne/login'>个人信息</a></li>");
+					}
+				} else {
+					out.print("<li role='presentation'><a href='/acne/login'>个人信息</a></li>");
+				}
+			%>
+			<li role="presentation"><a data-toggle="modal"
+				data-target="#myModal">网站建议</a></li>
+		</ul>
+	</nav>
 
 	<div class="container">
-		<div class="row row-offcanvas row-offcanvas-right">
+		<div class="row row-offcanvas row-offcanvas-right col-lg-12">
 			<div style="width: 100%; height: 40px;"></div>
-			<div class="col-12 col-md-9">
+			<div class="col-lg-9 col-md-9 col-9"
+				style="float: left; display: block; position: relative;">
 				<div class="jumbotron">
 					<h2>重要通知</h2>
 					<p>
-						网站注册用户：<%
-						out.print(acneNumObj.toString());
-					%>
 						<%
+							out.print("网站注册用户：");
+							out.print(acneNumObj.toString());
 							out.print("<br />");
-						%>
-						护肤专业人员：<%
+							out.print("护肤专业人员：");
 							out.print(antiNumObj.toString());
 						%>
 					</p>
 				</div>
-				<div class="row">
-					<%
-						List<Article> list = (ArrayList) request.getAttribute("articles");
-						for (int i = 0; i < list.size(); i++) {
-							Article article = list.get(i);
-							Long articleId = article.getArticleid();
 
-							String title = article.getTitle();
-							String content = article.getContent();
-							String digest = content.length() > 60 ? content.substring(0, 60) + "......" : content;
-							Integer upTimes = article.getUptimes();
-							Integer downTimes = article.getDowntimes();
-							Integer viewTimes = article.getViewtimes();
-							Date publishDate = article.getPublishdate();
-							SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+				<%
+					List<Article> list = (ArrayList) request.getAttribute("articles");
+					for (int i = 0; i < list.size(); i++) {
+						Article article = list.get(i);
+						Long articleId = article.getArticleid();
 
-							out.print("<div class='col-6 col-lg-4' style='margin-bottom: 10px;'>");
-							out.print("<h4 style='color: #333333;'>");
-							out.print(title);
-							out.print("</h4>");
-							out.print("<div style='font-size: 10px; color: #636363;'>");
-							out.print("发布于:" + format.format(publishDate));
-							out.print("</div>");
-							out.print("<div style='font-size: 14px; margin-top: 5px; color: #333333;'>");
-							out.print(digest);
-							out.print("<a class='btn btn-secondary' href='/acne/article?articleId=" + articleId
-									+ "' role='button'>查看详情&raquo;</a>");
-							out.print("</div>");
-							out.print("<div style='font-size: 10px;line-height: 15px; color: #999999;'>");
-							out.print("浏览:" + viewTimes);
-							out.print("&nbsp;&nbsp;赞:" + upTimes);
-							out.print("&nbsp;&nbsp;踩:" + downTimes);
-							out.print("&nbsp;&nbsp;0 " + "位行家推荐");
-							out.print("</div>");
+						String title = article.getTitle();
+						String content = article.getContent();
+						String delHtmlContent = HtmlRegexpUtil.delHTMLTag(content);
+						String digest = delHtmlContent.length() > 60 ? delHtmlContent.substring(0, 60) + "......" : delHtmlContent;
+						Integer upTimes = article.getUptimes();
+						Integer downTimes = article.getDowntimes();
+						Integer viewTimes = article.getViewtimes();
+						Date publishDate = article.getPublishdate();
+						SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+						if (i % 3 == 0) {
+							out.print("<div class='row'>");
+						}
+
+						out.print("<div class='col-lg-3' style='margin-bottom: 10px;'>");
+						out.print("<h4 style='color: #333333;'>");
+						out.print(title);
+						out.print("</h4>");
+						out.print("<div style='font-size: 10px; color: #636363;'>");
+						out.print("发布于:" + format.format(publishDate));
+						out.print("</div>");
+						out.print("<div style='font-size: 14px; margin-top: 5px; color: #333333;'>");
+						// 过滤掉html标签
+						out.print(digest);
+						System.out.println(digest);
+
+						out.print("<a class='btn btn-secondary' href='/acne/article?articleId=" + articleId
+								+ "' role='button'>查看详情&raquo;</a>");
+						out.print("</div>");
+						out.print("<div style='font-size: 10px;line-height: 15px; color: #999999;'>");
+						out.print("浏览:" + viewTimes);
+						out.print("&nbsp;&nbsp;赞:" + upTimes);
+						out.print("&nbsp;&nbsp;踩:" + downTimes);
+						out.print("&nbsp;&nbsp;0 " + "位专家推荐");
+						out.print("</div>");
+						out.print("</div>");
+
+						if (i % 3 == 2) {
 							out.print("</div>");
 						}
-						if (list.size() == 0) {
-							out.print("<div style='font-size: 20px; color: #999999;'>");
-							out.print("&nbsp;&nbsp;&nbsp;&nbsp;没有文章");
-							out.print("</div>");
-						}
-					%>
-				</div>
-				<!--/row-->
+					}
+
+					if (list.size() == 0) {
+						out.print("<div style='font-size: 20px; color: #999999;'>");
+						out.print("&nbsp;&nbsp;&nbsp;&nbsp;没有文章");
+						out.print("</div>");
+					}
+				%>
 			</div>
 			<!--/span-->
 
-			<div class="col-6 col-md-3">
+			<div class="col-lg-3 col-md-3 col-3"
+				style="float: right; display: block; position: relative;">
 
 				<div class="card" style="padding: 5px;">
 					<p>
@@ -243,54 +243,54 @@
 		<hr>
 
 		<nav aria-label="Page navigation">
-		<ul class="pagination pagination-lg">
-			<%
-				Integer pages = (Integer) request.getAttribute("pages");
-				Integer current = (Integer) request.getAttribute("current");
-				if (pages == 0) {
-				} else {
-					if (current > 1) {
-						out.print("<li class='enabled'><a href='/acne?pageNo=" + (current - 1)
-								+ "&pageSize=9'><span aria-hidden='true'>&laquo;</a></span></li>");
+			<ul class="pagination pagination-lg">
+				<%
+					Integer pages = (Integer) request.getAttribute("pages");
+					Integer current = (Integer) request.getAttribute("current");
+					if (pages == 0) {
 					} else {
-						out.print("<li class='disabled'><span><span aria-hidden='true'>&laquo;</span></span></li>");
-					}
-					if (current >= 6 && pages > 10) {
-						for (int m = 5; m >= 1; m--) {
-							out.print("<li class='enabled'><a href='/acne?pageNo=" + (current - m) + "&pageSize=9'>"
-									+ (current - m) + "<span class='sr-only'>(current)</a></span></li>");
+						if (current > 1) {
+							out.print("<li class='enabled'><a href='/acne?pageNo=" + (current - 1)
+									+ "&pageSize=9'><span aria-hidden='true'>&laquo;</a></span></li>");
+						} else {
+							out.print("<li class='disabled'><span><span aria-hidden='true'>&laquo;</span></span></li>");
 						}
-						out.print("<li class='active'><span>" + current
-								+ "<span class='sr-only'>(current)</span></span></li>");
-						int next = (pages - current < 4) ? (pages - current) : 4;
-						for (int n = 1; n <= next; n++) {
-							out.print("<li class='enabled'><a href='/acne?pageNo=" + (current + n) + "&pageSize=9'>"
-									+ (current + n) + "<span class='sr-only'>(current)</a></span></li>");
-						}
-					} else {
-						int pageNum = pages >= 10 ? 10 : pages;
-						for (int i = 1; i <= pageNum; i++) {
-							if (current == i) {
-								out.print("<li class='active'><span>" + i
-										+ "<span class='sr-only'>(current)</span></span></li>");
-							} else {
-								out.print("<li class='enabled'><a href='/acne?pageNo=" + i + "&pageSize=9'>" + i
-										+ "<span class='sr-only'>(current)</a></span></li>");
+						if (current >= 6 && pages > 10) {
+							for (int m = 5; m >= 1; m--) {
+								out.print("<li class='enabled'><a href='/acne?pageNo=" + (current - m) + "&pageSize=9'>"
+										+ (current - m) + "<span class='sr-only'>(current)</a></span></li>");
+							}
+							out.print("<li class='active'><span>" + current
+									+ "<span class='sr-only'>(current)</span></span></li>");
+							int next = (pages - current < 4) ? (pages - current) : 4;
+							for (int n = 1; n <= next; n++) {
+								out.print("<li class='enabled'><a href='/acne?pageNo=" + (current + n) + "&pageSize=9'>"
+										+ (current + n) + "<span class='sr-only'>(current)</a></span></li>");
+							}
+						} else {
+							int pageNum = pages >= 10 ? 10 : pages;
+							for (int i = 1; i <= pageNum; i++) {
+								if (current == i) {
+									out.print("<li class='active'><span>" + i
+											+ "<span class='sr-only'>(current)</span></span></li>");
+								} else {
+									out.print("<li class='enabled'><a href='/acne?pageNo=" + i + "&pageSize=9'>" + i
+											+ "<span class='sr-only'>(current)</a></span></li>");
+								}
 							}
 						}
+						if (current >= pages) {
+							out.print("<li class='disabled'><span><span aria-hidden='true'>&raquo;</span></span></li>");
+						} else {
+							out.print("<li class='enabled'><a href='/acne?pageNo=" + (current + 1)
+									+ "&pageSize=9'><span aria-hidden='true'>&raquo;</a></span></li>");
+						}
 					}
-					if (current >= pages) {
-						out.print("<li class='disabled'><span><span aria-hidden='true'>&raquo;</span></span></li>");
-					} else {
-						out.print("<li class='enabled'><a href='/acne?pageNo=" + (current + 1)
-								+ "&pageSize=9'><span aria-hidden='true'>&raquo;</a></span></li>");
-					}
-				}
-			%>
-		</ul>
+				%>
+			</ul>
 		</nav>
 		<footer>
-		<p>&copy; Company 2017</p>
+			<p>&copy; Company 2017</p>
 		</footer>
 
 	</div>
@@ -375,10 +375,10 @@
 							}
 
 							recommand_html += '<tr>';
-							recommand_html += '<td style="padding: 5px; width: 100px; height: 80px;">';
+							recommand_html += '<td style="width: 100px; height: 80px;">';
 							recommand_html += '<a href="/acne/anti/userId='+userId+'" title="'+desc+'" class="thumbnail"><img style="width: 100px; height: 80px;" src="'+avatar+'" alt="avatar"></a>';
 							recommand_html += '</td>';
-							recommand_html += '<td>';
+							recommand_html += '<td style="padding-left: 10px;">';
 							recommand_html += '<span><b>' + username + '</b></span>';
 							recommand_html += '<div class="tip"><span>' + titles[0] + '年护肤经验<br />';
 							recommand_html += titles[1] + '</span></div>';

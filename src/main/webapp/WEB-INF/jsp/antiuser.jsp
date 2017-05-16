@@ -23,7 +23,7 @@
 		<a href="/acne/" class="navbar-brand">SKIN FRESH</a>
 		<ul class="nav nav-tabs">
 			<li role="presentation" class="active"><a href="#">个人首页</a></li>
-			<li role="presentation"><a href="/acne/view_acne">浏览痘痘患者</a></li>
+			<li role="presentation"><a href="/acne/view_acne">用户查看</a></li>
 			<li role="presentation"><a href="/acne/post_article">写点博客</a></li>
 			<li role="presentation"><a href="/acne/post_goods">上传产品</a></li>
 		</ul>
@@ -68,11 +68,23 @@
 					} else {
 						var article_list_html = '';
 						$.each(data, function(index, obj) {
+							
+							console.log(obj);
+							
 							var title = obj.title.substr(0, 10);
 							var articleId = obj.articleid;
-							var content = obj.content.substr(0, 50).replace("<p><br></p>", "").trim();
+							var publishDate = obj.publishdate;
+							var viewtimes = obj.viewtimes;
+							var uptimes = obj.uptimes;
+							var downtimes = obj.downtimes;
+							
+							article_list_html += '<div>';
 							article_list_html += '<h4><a href="/acne/article?articleId=' + articleId + '">' + title + '</a></h4>';
-							article_list_html += '<p>' + content + '</p>';
+							article_list_html += '<div style="font-size: 15px; color: #ababab;">阅读：'+viewtimes+'&nbsp;&nbsp;';
+							article_list_html += '赞：' + uptimes + '&nbsp;&nbsp;';
+							article_list_html += '踩：' + downtimes + '&nbsp;&nbsp;';
+							article_list_html += '</div>';
+							article_list_html += '</div>';
 						});
 						$('#article_hist').html(article_list_html);
 					}

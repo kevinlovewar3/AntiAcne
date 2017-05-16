@@ -21,7 +21,8 @@ public class ArticleServiceImpl implements ArticleService {
 
 	@Override
 	public int deleteByPrimaryKey(Long articleid) {
-		// TODO Auto-generated method stub
+		
+		articleMapper.deleteByPrimaryKey(articleid);
 		return 0;
 	}
 

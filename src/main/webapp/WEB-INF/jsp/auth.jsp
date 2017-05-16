@@ -68,9 +68,9 @@
 					<div>
 						<label class="radio-inline"> <input type="radio"
 							checked="checked" name="userType0" id="acne_user"
-							value="acne_user">痘痘患者
+							value="acne_user">普通用户
 						</label> <label class="radio-inline"> <input type="radio"
-							name="userType0" id="anti_user" value="anti_user">治痘达人
+							name="userType0" id="anti_user" value="anti_user">皮肤专家
 						</label>
 					</div>
 				</div>
@@ -120,9 +120,9 @@
 				name="password" placeholder="密码" required>
 			<div>
 				<label class="radio-inline"> <input type="radio"
-					checked="checked" name="userType" id="acne_user" value="acne_user">痘痘患者
+					checked="checked" name="userType" id="acne_user" value="acne_user">普通用户
 				</label> <label class="radio-inline"> <input type="radio"
-					name="userType" id="anti_user" value="anti_user">治痘达人
+					name="userType" id="anti_user" value="anti_user">皮肤专家
 				</label>
 			</div>
 			<br /> <label> <input id="remember-me" type="checkbox"
@@ -193,13 +193,14 @@
 					phone : phone,
 					password : hex_md5(password),
 					userType : userType
-				}, function(data) {
-					var message = JSON.parse(data);
-					if(message.message == 'success'){
-						$('#myModal').modal('hide');
-						
-						$('#inputPhone').val(phone);
-						$('#inputPassword').val(password);
+				}, function(data, status) {
+					if(status == 'success'){
+						if(data.message == 'success'){
+							$('#myModal').modal('hide');
+							
+							$('#inputPhone').val(phone);
+							$('#inputPassword').val(password);
+						}	
 					}
 				});
 			});
@@ -261,6 +262,6 @@
 	<!-- Placed at the end of the document so the pages load faster -->
 	<!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
 	<script src="res/js/ie10-viewport-bug-workaround.js"></script>
-
+	<script src="res/js/md5.js"></script>
 </body>
 </html>

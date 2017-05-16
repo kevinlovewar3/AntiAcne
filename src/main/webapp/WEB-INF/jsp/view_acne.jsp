@@ -27,7 +27,7 @@
 		<a href="/acne/" class="navbar-brand">SKIN FRESH</a>
 		<ul class="nav nav-tabs">
 			<li role="presentation"><a href="/acne/antiuser">个人首页</a></li>
-			<li role="presentation" class="active"><a href="/acne/view_acne">浏览痘痘患者</a></li>
+			<li role="presentation" class="active"><a href="/acne/view_acne">用户查看</a></li>
 			<li role="presentation"><a href="/acne/post_article">写点博客</a></li>
 			<li role="presentation"><a href="/acne/post_goods">上传产品</a></li>
 		</ul>
@@ -41,6 +41,9 @@
 				Long imageId = acneImage.getImageid();
 				String imageName = acneImage.getPath();
 				String desc = acneImage.getDesc();
+				if(desc == null || desc.length() == 0){
+					desc = "用户没留言";
+				}
 				Date postTime = acneImage.getPosttime();
 				Integer auth = acneImage.getAuthorith();
 				if (auth == 1)
@@ -54,7 +57,10 @@
 				
 				out.print("<div class='col-lg-8'>");
 				out.print("<div style='font-size: 17px; color: #888888; padding-top: 20px;'>");
-				out.print("上传于：" + format.format(postTime));
+				out.print("用户上传于：" + format.format(postTime));
+				out.print("</div>");
+				out.print("<div style='font-size: 16px; color: #ababab;'>");
+				out.print("<p>" + desc + "</p>");
 				out.print("</div>");
 				out.print("<div style='margin-top: 10px;'>");
 				out.print("<textarea id='comments' placeholder='留言' rows='5' cols='0' style='width: 80%; padding: 3px; font-size: 18px; color: #444444;'></textarea>");

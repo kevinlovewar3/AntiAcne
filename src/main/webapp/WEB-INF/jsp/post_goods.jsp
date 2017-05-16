@@ -24,7 +24,7 @@
 		<a href="/acne/" class="navbar-brand">SKIN FRESH</a>
 		<ul class="nav nav-tabs">
 			<li role="presentation"><a href="/acne/antiuser">个人首页</a></li>
-			<li role="presentation"><a href="/acne/view_acne">浏览痘痘患者</a></li>
+			<li role="presentation"><a href="/acne/view_acne">用户查看</a></li>
 			<li role="presentation"><a href="/acne/post_article">写点博客</a></li>
 			<li role="presentation" class="active"><a href="#">上传产品</a></li>
 		</ul>

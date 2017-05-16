@@ -241,8 +241,8 @@
 		<div class="row marketing">
 			<div class="col-lg-12">
 				<h4>推荐达人</h4>
+				<div id="anti_recommand" class="row col-lg-12"></div>
 			</div>
-			<div id="anti_recommand" class="row col-lg-12"></div>
 		</div>
 
 		<br />
