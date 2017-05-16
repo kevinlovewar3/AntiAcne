@@ -18,6 +18,8 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.acne.model.GoodsWithBLOBs;
 import com.acne.service.GoodsService;
+import com.acne.util.ObjectUtil;
+import com.acne.util.StringUtil;
 import com.github.pagehelper.PageInfo;
 
 @Controller
@@ -73,9 +75,12 @@ public class GoodsController {
 			"application/json; charset=UTF-8" })
 	@ResponseBody
 	public String postedGoods(HttpServletRequest request, HttpServletResponse response) {
-
-		String userIdStr = request.getSession().getAttribute("userId").toString();
-		Long userId = Long.parseLong(userIdStr);
+		Object userIdObj = request.getSession().getAttribute("userId");
+		Long userId = ObjectUtil.ObjectToLong(userIdObj);
+		if (userId == Long.MIN_VALUE) {
+			userId = StringUtil.StringToLong(request.getParameter("antiUserId"));
+		}	
+		
 		List<GoodsWithBLOBs> goodsWithBLOBs = goodsService.queryPostedGoods(userId);
 		logger.info("/acne/posted_goods, GoodsWithBLOBs: {}", goodsWithBLOBs);
 		JSONArray array = new JSONArray(goodsWithBLOBs);

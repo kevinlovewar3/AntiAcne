@@ -162,8 +162,12 @@ public class ArticleController {
 			"application/json; charset=UTF-8" })
 	@ResponseBody
 	public String postedArticle(HttpServletRequest request, HttpServletResponse response) {
-		String userIdStr = request.getSession().getAttribute("userId").toString();
-		Long userId = Long.parseLong(userIdStr);
+		Object userIdObj = request.getSession().getAttribute("userId");
+		Long userId = ObjectUtil.ObjectToLong(userIdObj);
+		if (userId == Long.MIN_VALUE) {
+			userId = StringUtil.StringToLong(request.getParameter("antiUserId"));
+		}
+	
 		List<Article> articles = articleService.queryPostedArticle(userId);
 		JSONArray array = new JSONArray(articles);
 
@@ -231,12 +235,21 @@ public class ArticleController {
 	public String articleOption(HttpServletRequest request, HttpServletResponse response) {
 		return postArticleHist(request, response);
 	}
-	
-	@RequestMapping(value = "article", method = RequestMethod.DELETE)
+
+	/**
+	 * É¾³ý²©ÎÄ
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping(value = "delete/article", method = RequestMethod.GET)
 	@ResponseBody
 	public String deleteArticle(HttpServletRequest request, HttpServletResponse response) {
 		
 		String articleId = request.getParameter("articleId");
+		
+		logger.info("delete article Id: {}", articleId);
+		
 		articleService.deleteByPrimaryKey(StringUtil.StringToLong(articleId));
 		return MSG_SUCCESS;
 	}
