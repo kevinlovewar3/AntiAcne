@@ -84,6 +84,7 @@
 							article_list_html += '赞：' + uptimes + '&nbsp;&nbsp;';
 							article_list_html += '踩：' + downtimes + '&nbsp;&nbsp;';
 							article_list_html += '</div>';
+							
 							article_list_html += '</div>';
 						});
 						$('#article_hist').html(article_list_html);
