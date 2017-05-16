@@ -349,7 +349,7 @@
 											}
 
 											recommand_html += '<div class="col-xs-3 col-md-6" style="height: 100px; width: 100px; padding: 5px;">';
-											recommand_html += '<a href="/acne/anti/userId='+userId+'" class="thumbnail">';
+											recommand_html += '<a href="/acne/anti_home?antiUserId='+userId+'" class="thumbnail">';
 											recommand_html += '<img src="'+avatar+'", alt="'+desc+'">';
 											recommand_html += '<div style="text-align: center; font-size: 15px; color: #4b503a;"><span><b>';
 											recommand_html += username;
@@ -380,7 +380,6 @@
 												content = obj.content;
 											}
 											article_list_html += '<h4><a href="/acne/article?articleId=' + articleId + '">' + title + '</a></h4>';
-											article_list_html += '<p>' + content + '</p>';
 										});
 										$('#article_hist').html(article_list_html);
 									}

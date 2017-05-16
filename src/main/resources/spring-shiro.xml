@@ -70,6 +70,12 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 				/css/**=anon
 				/js/**=anon
 				/img/**=anon
+				<!-- 只读查看祛痘达人上传的文章和产品 -->
+				/posted_goods**=anon
+				/posted_article**=anon
+				<!-- 只读权限查看祛痘达人 -->
+				/anti_home**=anon
+				<!-- 删除文章 -->
 				/delete/article**=anon
 				<!-- 作者的文章 -->
 				/anti/article_list**=anon

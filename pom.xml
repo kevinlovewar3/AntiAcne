@@ -218,6 +218,12 @@
 			<artifactId>shiro-spring</artifactId>
 			<version>1.4.0-RC2</version>
 		</dependency>
+		<!-- mqtt -->
+		<dependency>
+			<groupId>org.fusesource.mqtt-client</groupId>
+			<artifactId>mqtt-client</artifactId>
+			<version>1.12</version>
+		</dependency>
 	</dependencies>
 
 	<build>

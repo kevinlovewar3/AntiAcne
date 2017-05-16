@@ -58,7 +58,7 @@
 						avatar = "/acne/image/avatar/" + avatar;
 					}
 					out.print("<div class='col-lg-2 card' style='width: 150px; height: 120px; display: block;'>");
-					out.print("<a href='/acne/anti/userId=" + userId + "' class='thumbnail'>");
+					out.print("<a href='/acne/anti_home?antiUserId=" + userId + "' class='thumbnail'>");
 					out.print("<img src='" + avatar + "', alt='" + desc + "'>");
 					out.print("</a>");
 					out.print("</div>");

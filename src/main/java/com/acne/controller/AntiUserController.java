@@ -108,12 +108,19 @@ public class AntiUserController {
 		return articlesJson.toString();
 	}
 	
+	/**
+	 * 只读权限 查看祛痘达人界面
+	 * @param request
+	 * @param response
+	 * @return
+	 */
 	@RequestMapping(value = "anti_home", method = RequestMethod.GET)
 	@ResponseBody
 	public ModelAndView antiHome(HttpServletRequest request, HttpServletResponse response){
 		
 		String antiUserIdStr = request.getParameter("antiUserId");
 		Long antiUserId = StringUtil.StringToLong(antiUserIdStr);
+		
 		ModelAndView mView = new ModelAndView("anti_home");
 		mView.addObject("antiUserId", antiUserId);
 		

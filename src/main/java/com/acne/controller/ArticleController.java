@@ -162,12 +162,12 @@ public class ArticleController {
 			"application/json; charset=UTF-8" })
 	@ResponseBody
 	public String postedArticle(HttpServletRequest request, HttpServletResponse response) {
-		Object userIdObj = request.getSession().getAttribute("userId");
-		Long userId = ObjectUtil.ObjectToLong(userIdObj);
+		
+		Long userId = StringUtil.StringToLong(request.getParameter("antiUserId"));
 		if (userId == Long.MIN_VALUE) {
-			userId = StringUtil.StringToLong(request.getParameter("antiUserId"));
+			userId = ObjectUtil.ObjectToLong(request.getSession().getAttribute("userId"));
 		}
-	
+		
 		List<Article> articles = articleService.queryPostedArticle(userId);
 		JSONArray array = new JSONArray(articles);
 

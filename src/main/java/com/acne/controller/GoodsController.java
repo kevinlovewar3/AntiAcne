@@ -75,11 +75,11 @@ public class GoodsController {
 			"application/json; charset=UTF-8" })
 	@ResponseBody
 	public String postedGoods(HttpServletRequest request, HttpServletResponse response) {
-		Object userIdObj = request.getSession().getAttribute("userId");
-		Long userId = ObjectUtil.ObjectToLong(userIdObj);
+		
+		Long userId = StringUtil.StringToLong(request.getParameter("antiUserId"));
 		if (userId == Long.MIN_VALUE) {
-			userId = StringUtil.StringToLong(request.getParameter("antiUserId"));
-		}	
+			userId = ObjectUtil.ObjectToLong(request.getSession().getAttribute("userId"));
+		}
 		
 		List<GoodsWithBLOBs> goodsWithBLOBs = goodsService.queryPostedGoods(userId);
 		logger.info("/acne/posted_goods, GoodsWithBLOBs: {}", goodsWithBLOBs);
