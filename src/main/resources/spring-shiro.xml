@@ -70,6 +70,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 				/css/**=anon
 				/js/**=anon
 				/img/**=anon
+				/delete/article**=anon
 				<!-- 作者的文章 -->
 				/anti/article_list**=anon
 				/jfreechart=anon

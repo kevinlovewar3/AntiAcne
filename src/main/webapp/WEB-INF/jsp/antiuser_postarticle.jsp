@@ -13,7 +13,6 @@
 
 <!-- Bootstrap core CSS -->
 <link href="res/css/bootstrap.min.css" rel="stylesheet">
-<link href="res/css/bootstrap-markdown.min.css" rel="stylesheet">
 <link href="res/css/bootstrap-theme.min.css" rel="stylesheet">
 <link href="res/css/summernote.css" rel="stylesheet">
 <!-- Custom styles for this template -->
@@ -40,10 +39,11 @@
 						aria-describedby="sizing-addon1">
 				</div>
 			</div>
-			<div class="row">
+			<div class="row" style="margin-bottom: 20px;">
 				<div id="summernote"></div>
 				<div>
 					<button id="upload" class="btn btn-default">保存</button>
+					<button id="reset" class="btn btn-default">重置</button>
 				</div>
 			</div>
 		</div>
@@ -57,9 +57,6 @@
 
 	<script src="res/js/jquery-3.1.1.min.js"></script>
 	<script src="res/js/bootstrap.min.js"></script>
-	<script src="res/js/marked.min.js"></script>
-	<script src="res/js/bootstrap-markdown.js"></script>
-	<script src="res/js/bootstrap-markdown.zh.js"></script>
 	<script src="res/js/summernote.js"></script>
 
 	<!-- Bootstrap core JavaScript
@@ -70,7 +67,7 @@
 	<script charset="utf-8">
 		$(document).ready(function() {
 			$('#summernote').summernote({
-				height : 700,
+				height : 600,
 				minHeight : null,
 				maxHeight : null,
 				focus : true
@@ -87,9 +84,20 @@
 					url : '/acne/article',
 					data : json,
 					success : function(data) {
-
+						console.log(data);
+						var result = JSON.parse(data);
+						if(result.message == 'success.'){
+							$('#title').val('');
+							$('#summernote').summernote('code', '');
+							alert("上传成功!");
+						}
 					}
 				});
+			});
+			
+			$('#reset').click(function(){
+				$('#title').val('');
+				$('#summernote').summernote('code', '');
 			});
 		});
 	</script>

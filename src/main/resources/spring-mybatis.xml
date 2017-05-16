@@ -23,7 +23,7 @@
 		destroy-method="close">
 		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
 		<property name="url"
-			value="jdbc:mysql://localhost:3306/acne?autoReconnect=true&amp;useUnicode=true&amp;characterEncoding=utf8&amp;useSSL=false" />
+			value="jdbc:mysql://192.168.0.4:3306/acne?autoReconnect=true&amp;useUnicode=true&amp;characterEncoding=utf8&amp;useSSL=false" />
 		<property name="username" value="root" />
 		<property name="password" value="cisco" />
 		<!-- 初始化连接大小 -->
@@ -58,7 +58,7 @@
 	</bean>
 
 	<amq:connectionFactory id="amqConnectionFactory"
-		brokerURL="tcp://localhost:61616" />
+		brokerURL="tcp://192.168.0.4:61616" />
 
 	<bean id="connectionFactory"
 		class="org.springframework.jms.connection.CachingConnectionFactory">

@@ -15,10 +15,12 @@
 <!DOCTYPE html>
 <html lang="zh">
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="viewport"
+	content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <meta name="author" content="">
 <meta name="keywords" content="护肤 祛痘 祛痘印 祛黑头 去痘 去痘印 去黑头 补水 控油">
-<meta name="description" content="SKIN FRESH是一个优质护肤文章、护肤产品信息共享的平台。护肤专家根据用户提供的详细信息做出针对性的护肤建议。">
+<meta name="description"
+	content="SKIN FRESH是一个优质护肤文章、护肤产品信息共享的平台。护肤专家根据用户提供的详细信息做出针对性的护肤建议。">
 <link rel="icon" href="res/images/favicon.ico">
 
 <title>精选博文</title>
@@ -132,8 +134,7 @@ body {
 	<div class="container">
 		<div class="row row-offcanvas row-offcanvas-right col-lg-12">
 			<div style="width: 100%; height: 40px;"></div>
-			<div class="col-lg-9 col-md-9 col-9"
-				style="float: left; display: block; position: relative;">
+			<div class="col-lg-9 col-md-9 col-9">
 				<div class="jumbotron">
 					<h2>重要通知</h2>
 					<p>
@@ -156,18 +157,16 @@ body {
 						String title = article.getTitle();
 						String content = article.getContent();
 						String delHtmlContent = HtmlRegexpUtil.delHTMLTag(content);
-						String digest = delHtmlContent.length() > 60 ? delHtmlContent.substring(0, 60) + "......" : delHtmlContent;
+						String digest = delHtmlContent.length() > 60
+								? delHtmlContent.substring(0, 60) + "......"
+								: delHtmlContent;
 						Integer upTimes = article.getUptimes();
 						Integer downTimes = article.getDowntimes();
 						Integer viewTimes = article.getViewtimes();
 						Date publishDate = article.getPublishdate();
 						SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-						if (i % 3 == 0) {
-							out.print("<div class='row'>");
-						}
-
-						out.print("<div class='col-lg-3' style='margin-bottom: 10px;'>");
+						out.print("<div class='col-lg-9' style='margin-bottom: 10px;'>");
 						out.print("<h4 style='color: #333333;'>");
 						out.print(title);
 						out.print("</h4>");
@@ -190,9 +189,6 @@ body {
 						out.print("</div>");
 						out.print("</div>");
 
-						if (i % 3 == 2) {
-							out.print("</div>");
-						}
 					}
 
 					if (list.size() == 0) {
@@ -289,8 +285,13 @@ body {
 				%>
 			</ul>
 		</nav>
-		<footer>
-			<p>&copy; Company 2017</p>
+
+		<footer class="text-muted">
+			<div class="container">
+				<p class="float-right">
+				<p>&copy; Company 2017</p>
+				</p>
+			</div>
 		</footer>
 
 	</div>
@@ -303,7 +304,7 @@ body {
 	<script src="res/js/jquery-3.1.1.slim.min.js"></script>
 	<script src="res/js/jquery-3.1.1.min.js"></script>
 	<script
-		src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js"></script>
+		src="res/js/tether.min.js"></script>
 	<script src="res/js/bootstrap.min.js"></script>
 	<!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
 	<script src="res/js/ie10-viewport-bug-workaround.js"></script>
@@ -376,7 +377,7 @@ body {
 
 							recommand_html += '<tr>';
 							recommand_html += '<td style="width: 100px; height: 80px;">';
-							recommand_html += '<a href="/acne/anti/userId='+userId+'" title="'+desc+'" class="thumbnail"><img style="width: 100px; height: 80px;" src="'+avatar+'" alt="avatar"></a>';
+							recommand_html += '<a href="/acne/anti_home?antiUserId='+userId+'" title="'+desc+'" class="thumbnail"><img style="width: 100px; height: 80px;" src="'+avatar+'" alt="avatar"></a>';
 							recommand_html += '</td>';
 							recommand_html += '<td style="padding-left: 10px;">';
 							recommand_html += '<span><b>' + username + '</b></span>';

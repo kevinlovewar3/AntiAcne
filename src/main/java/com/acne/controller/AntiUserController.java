@@ -19,6 +19,7 @@ import com.acne.model.AntiAcneUser;
 import com.acne.model.Article;
 import com.acne.service.AntiUserService;
 import com.acne.service.ArticleService;
+import com.acne.util.StringUtil;
 
 @Controller
 @RequestMapping(value = "/")
@@ -107,7 +108,17 @@ public class AntiUserController {
 		return articlesJson.toString();
 	}
 	
-	
+	@RequestMapping(value = "anti_home", method = RequestMethod.GET)
+	@ResponseBody
+	public ModelAndView antiHome(HttpServletRequest request, HttpServletResponse response){
+		
+		String antiUserIdStr = request.getParameter("antiUserId");
+		Long antiUserId = StringUtil.StringToLong(antiUserIdStr);
+		ModelAndView mView = new ModelAndView("anti_home");
+		mView.addObject("antiUserId", antiUserId);
+		
+		return mView;
+	}
 	
 	
 	
