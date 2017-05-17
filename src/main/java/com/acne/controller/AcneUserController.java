@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 
+import javax.jms.JMSException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -26,6 +27,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.acne.constant.Constants;
+import com.acne.consumer.AcneCommentConsumer;
 import com.acne.model.AcneImage;
 import com.acne.model.AcneUser;
 import com.acne.service.AcneImageService;
@@ -49,6 +51,9 @@ public class AcneUserController {
 
 	@Autowired
 	AcneImageService acneImageService;
+	
+	@Autowired
+	AcneCommentConsumer acneCommentConsumer;
 
 	/**
 	 * ¶»¶»»¼ÕßÊ×Ò³
@@ -56,11 +61,17 @@ public class AcneUserController {
 	 * @param request
 	 * @param response
 	 * @return
+	 * @throws JMSException 
 	 */
 	@RequestMapping(value = "acneuser", method = RequestMethod.GET)
 	@ResponseBody
-	public ModelAndView acneUser(HttpServletRequest request, HttpServletResponse response) {
+	public ModelAndView acneUser(HttpServletRequest request, HttpServletResponse response) throws JMSException {
 		ModelAndView mView = new ModelAndView("acneuser");
+		Object userIdObj = request.getSession().getAttribute("userId");
+		String queue = "queue/" + userIdObj.toString();
+		acneCommentConsumer.setQueue(queue);
+		acneCommentConsumer.createQueue();
+		
 		return mView;
 	}
 

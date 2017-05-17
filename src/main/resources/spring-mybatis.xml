@@ -22,9 +22,8 @@
 	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"
 		destroy-method="close">
 		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
-		<property name="url"
-			value="jdbc:mysql://192.168.0.4:3306/acne?autoReconnect=true&amp;useUnicode=true&amp;characterEncoding=utf8&amp;useSSL=false" />
-		<property name="username" value="root" />
+		<property name="url" value="jdbc:mysql://10.75.189.108:3306/acne?autoReconnect=true&amp;useUnicode=true&amp;characterEncoding=utf8&amp;useSSL=false" />
+		<property name="username" value="cisco" />
 		<property name="password" value="cisco" />
 		<!-- 初始化连接大小 -->
 		<property name="initialSize" value="0"></property>
@@ -58,7 +57,7 @@
 	</bean>
 
 	<amq:connectionFactory id="amqConnectionFactory"
-		brokerURL="tcp://192.168.0.4:61616" />
+		brokerURL="tcp://10.75.189.108:61616" />
 
 	<bean id="connectionFactory"
 		class="org.springframework.jms.connection.CachingConnectionFactory">
@@ -83,6 +82,10 @@
 	<bean id="consumer" class="com.acne.consumer.AcneViewedArticleConsumer"></bean>
 
 	<bean id="applicationCtx" class="com.acne.application.AcneApplicationCtx"></bean>
+
+	<bean id="acneCommentProducer" class="com.acne.producer.AcneCommentProducer"></bean>
+	
+	<bean id="acneCommentConsumer" class="com.acne.consumer.AcneCommentConsumer"></bean>
 
 	<!-- 消息监听容器 -->
 	<bean id="jmsContainer"

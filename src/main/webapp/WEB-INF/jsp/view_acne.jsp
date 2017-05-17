@@ -22,6 +22,7 @@
 <link href="res/css/narrow-jumbotron.css" rel="stylesheet">
 </head>
 
+
 <body>
 	<div class="container">
 		<a href="/acne/" class="navbar-brand">SKIN FRESH</a>
@@ -41,7 +42,8 @@
 				Long imageId = acneImage.getImageid();
 				String imageName = acneImage.getPath();
 				String desc = acneImage.getDesc();
-				if(desc == null || desc.length() == 0){
+				Long acneUserId = acneImage.getAcneuserid();
+				if (desc == null || desc.length() == 0) {
 					desc = "用户没留言";
 				}
 				Date postTime = acneImage.getPosttime();
@@ -54,7 +56,7 @@
 				out.print("<img alt='Card image cap' style='height: 280px; width: 360px;' src='/acne/image/"
 						+ acneImage.getPath() + "'>");
 				out.print("</div>");
-				
+
 				out.print("<div class='col-lg-8'>");
 				out.print("<div style='font-size: 17px; color: #888888; padding-top: 20px;'>");
 				out.print("用户上传于：" + format.format(postTime));
@@ -63,10 +65,12 @@
 				out.print("<p>" + desc + "</p>");
 				out.print("</div>");
 				out.print("<div style='margin-top: 10px;'>");
-				out.print("<textarea id='comments' placeholder='留言' rows='5' cols='0' style='width: 80%; padding: 3px; font-size: 18px; color: #444444;'></textarea>");
+				out.print("<textarea id='comment-" + i
+						+ "' placeholder='留言' rows='5' cols='0' style='width: 80%; padding: 3px; font-size: 18px; color: #444444;'></textarea>");
 				out.print("</div>");
 				out.print("<div style='margin-top: 10px;'>");
-				out.print("<button class='btn btn-default' type='button'>提交</button>");
+				out.print("<button id='btn_submit' onclick='addMessage(" + acneUserId + "," + i
+						+ ")' class='btn btn-default' type='button'>提交</button>");
 				out.print("</div>");
 				out.print("</div>");
 				out.print("</div>");
@@ -139,6 +143,13 @@
 
 	<script src="res/js/jquery-3.1.1.min.js"></script>
 	<script src="res/js/bootstrap.min.js"></script>
+	<script>
+		function addMessage(acneUserId, i) {
+			var comment = $('#comment-' + i).val();
+			console.log(comment);
+			$.get('/acne/comments', { acneUserId : acneUserId, comment : comment }, function(data) { console.log(data); });
+		}
+	</script>
 
 	<!-- Bootstrap core JavaScript
     ================================================== -->
@@ -147,6 +158,7 @@
 	<script src="res/js/ie10-viewport-bug-workaround.js"></script>
 	<script charset="utf-8">
 		$(document).ready(function() {
+
 		});
 	</script>
 </body>

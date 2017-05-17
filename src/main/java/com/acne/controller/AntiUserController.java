@@ -2,6 +2,7 @@ package com.acne.controller;
 
 import java.util.List;
 
+import javax.jms.JMSException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -17,6 +18,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.acne.model.AntiAcneUser;
 import com.acne.model.Article;
+import com.acne.producer.AcneCommentProducer;
 import com.acne.service.AntiUserService;
 import com.acne.service.ArticleService;
 import com.acne.util.StringUtil;
@@ -32,6 +34,9 @@ public class AntiUserController {
 
 	@Autowired
 	ArticleService articleService;
+
+	@Autowired
+	AcneCommentProducer acneCommentProducer;
 
 	/**
 	 * 治痘达人首页
@@ -61,7 +66,7 @@ public class AntiUserController {
 		List<AntiAcneUser> antiAcneUsers = antiUserService.queryRecommandsAntiUser();
 
 		logger.info("Get anti/recommands, result: {}", antiAcneUsers);
-		
+
 		mView.addObject("antiUser", antiAcneUsers);
 		return mView;
 	}
@@ -107,30 +112,47 @@ public class AntiUserController {
 
 		return articlesJson.toString();
 	}
-	
+
 	/**
 	 * 只读权限 查看祛痘达人界面
+	 * 
 	 * @param request
 	 * @param response
 	 * @return
 	 */
 	@RequestMapping(value = "anti_home", method = RequestMethod.GET)
 	@ResponseBody
-	public ModelAndView antiHome(HttpServletRequest request, HttpServletResponse response){
-		
+	public ModelAndView antiHome(HttpServletRequest request, HttpServletResponse response) {
+
 		String antiUserIdStr = request.getParameter("antiUserId");
 		Long antiUserId = StringUtil.StringToLong(antiUserIdStr);
-		
+
 		ModelAndView mView = new ModelAndView("anti_home");
 		mView.addObject("antiUserId", antiUserId);
-		
+
 		return mView;
 	}
-	
-	
-	
-	
-	
-	
-	
+
+	/**
+	 * 祛痘达人发表评论
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping(value = "comments", method = RequestMethod.GET, produces = { "application/json; charset=UTF-8" })
+	@ResponseBody
+	public String postComments(HttpServletRequest request, HttpServletResponse response) {
+		String acneUserId = request.getParameter("acneUserId");
+		String comment = request.getParameter("comment");
+		String queue = "queue/" + acneUserId;
+		try {
+			acneCommentProducer.send(queue, comment);
+		} catch (JMSException e) {
+			logger.error("send comment error, error message is: {}", e.getLocalizedMessage());
+			e.printStackTrace();
+			return "{\"message\":\"fail\"}";
+		}
+		return "{\"message\":\"success\"}";
+	}
+
 }
