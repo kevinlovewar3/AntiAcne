@@ -135,6 +135,7 @@ public class AntiUserController {
 
 	/**
 	 * 祛痘达人发表评论
+	 * 
 	 * @param request
 	 * @param response
 	 * @return
@@ -144,9 +145,8 @@ public class AntiUserController {
 	public String postComments(HttpServletRequest request, HttpServletResponse response) {
 		String acneUserId = request.getParameter("acneUserId");
 		String comment = request.getParameter("comment");
-		String queue = "queue/" + acneUserId;
 		try {
-			acneCommentProducer.send(queue, comment);
+			acneCommentProducer.send(StringUtil.StringToLong(acneUserId), comment);
 		} catch (JMSException e) {
 			logger.error("send comment error, error message is: {}", e.getLocalizedMessage());
 			e.printStackTrace();

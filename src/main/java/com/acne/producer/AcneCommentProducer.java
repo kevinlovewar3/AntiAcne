@@ -1,36 +1,35 @@
 package com.acne.producer;
 
-import javax.jms.Connection;
-import javax.jms.DeliveryMode;
 import javax.jms.Destination;
 import javax.jms.JMSException;
-import javax.jms.MessageProducer;
+import javax.jms.Message;
 import javax.jms.Session;
-import javax.jms.TextMessage;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jms.connection.CachingConnectionFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.jms.core.JmsTemplate;
+import org.springframework.jms.core.MessageCreator;
 
 public class AcneCommentProducer {
 
 	@Autowired
-	CachingConnectionFactory connectionFactory;
+	@Qualifier("commentDestination")
+	private Destination destination;
 
-	MessageProducer producer;
-	Connection connection;
-	Session session;
-	Destination destination;
+	@Autowired
+	JmsTemplate jmsTemplate;
 
-	public void send(String queue, String message) throws JMSException {
-		connection = connectionFactory.createQueueConnection();
-		connection.start();
-		session = connection.createSession(Boolean.TRUE, Session.AUTO_ACKNOWLEDGE);
-		destination = session.createQueue(queue);
-		producer = session.createProducer(destination);
-		producer.setDeliveryMode(DeliveryMode.PERSISTENT);
-		
-		TextMessage msg = session.createTextMessage(message);
-		producer.send(msg);
-		
+	public void send(final Long userId, final String coment) throws JMSException {
+
+		jmsTemplate.send(destination, new MessageCreator() {
+
+			@Override
+			public Message createMessage(Session session) throws JMSException {
+				Message message = session.createMessage();
+				message.setLongProperty("userId", userId);
+				message.setStringProperty("comment", coment);
+				return message;
+			}
+		});
 	}
 }

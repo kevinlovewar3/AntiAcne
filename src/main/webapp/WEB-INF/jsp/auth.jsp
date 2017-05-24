@@ -53,15 +53,15 @@
 
 					<div class="input-group">
 						<span class="input-group-addon" id="password">输入密码：</span> <input
-							id="register-password" class="form-control" placeholder="至少6位" type="password"
-							aria-describedby="password">
+							id="register-password" class="form-control" placeholder="至少6位"
+							type="password" aria-describedby="password">
 					</div>
 					</p>
 
 					<div class="input-group">
 						<span class="input-group-addon" id="conform_password">确认密码：</span>
-						<input type="password" class="form-control" placeholder="至少6位" id="conform-password"
-							aria-describedby="conform_password">
+						<input type="password" class="form-control" placeholder="至少6位"
+							id="conform-password" aria-describedby="conform_password">
 					</div>
 					</p>
 					您是
@@ -130,19 +130,18 @@
 			</label>
 
 			<div class="input-group" style="padding: 5px;">
-				<span class="input-group-addon"> 
-				<%
- 					out.print("<div>");
- 					Object validateCodeObj = request.getAttribute("validateCode");
- 					if (validateCodeObj != null) {
- 						String validatorString = validateCodeObj.toString();
- 						for (int i = 0; i < validatorString.length(); i++) {
- 							String name = validatorString.charAt(i) + ".gif";
- 							out.print("<img src='res/img/" + name + "' alt='" + name + "'>");
- 						}
- 					}
- 					out.print("</div>");
- 				%>
+				<span class="input-group-addon"> <%
+ 	out.print("<div>");
+ 	Object validateCodeObj = request.getAttribute("validateCode");
+ 	if (validateCodeObj != null) {
+ 		String validatorString = validateCodeObj.toString();
+ 		for (int i = 0; i < validatorString.length(); i++) {
+ 			String name = validatorString.charAt(i) + ".gif";
+ 			out.print("<img src='res/img/" + name + "' alt='" + name + "'>");
+ 		}
+ 	}
+ 	out.print("</div>");
+ %>
 				</span> <input id="validate_code" type="text" class="form-control"
 					name="validateCode" placeholder="验证码"
 					aria-describedby="validate code">
@@ -158,6 +157,7 @@
 
 	<script src="res/js/jquery-3.1.1.min.js"></script>
 	<script src="res/js/bootstrap.min.js"></script>
+	
 	<script charset='utf-8'>
 		$(document).ready(function() {
 

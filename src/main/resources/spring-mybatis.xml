@@ -22,7 +22,8 @@
 	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"
 		destroy-method="close">
 		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
-		<property name="url" value="jdbc:mysql://10.75.189.108:3306/acne?autoReconnect=true&amp;useUnicode=true&amp;characterEncoding=utf8&amp;useSSL=false" />
+		<property name="url"
+			value="jdbc:mysql://10.75.189.108:3306/acne?autoReconnect=true&amp;useUnicode=true&amp;characterEncoding=utf8&amp;useSSL=false" />
 		<property name="username" value="cisco" />
 		<property name="password" value="cisco" />
 		<!-- 初始化连接大小 -->
@@ -62,6 +63,7 @@
 	<bean id="connectionFactory"
 		class="org.springframework.jms.connection.CachingConnectionFactory">
 		<constructor-arg ref="amqConnectionFactory" />
+		<property name="sessionCacheSize" value="100"></property>
 	</bean>
 
 	<!-- Spring提供的JMS工具类，它可以进行消息发送、接收等 -->
@@ -77,6 +79,13 @@
 		</constructor-arg>
 	</bean>
 
+	<!-- comment message queue -->
+	<bean id="commentDestination" class="org.apache.activemq.command.ActiveMQQueue">
+		<constructor-arg>
+			<value>commentQueue</value>
+		</constructor-arg>
+	</bean>
+
 	<bean class="com.acne.application.AcneApplicationRefresh"></bean>
 
 	<bean id="consumer" class="com.acne.consumer.AcneViewedArticleConsumer"></bean>
@@ -84,8 +93,21 @@
 	<bean id="applicationCtx" class="com.acne.application.AcneApplicationCtx"></bean>
 
 	<bean id="acneCommentProducer" class="com.acne.producer.AcneCommentProducer"></bean>
-	
+
 	<bean id="acneCommentConsumer" class="com.acne.consumer.AcneCommentConsumer"></bean>
+	
+	<bean id="springWebSocketHandler" class="com.acne.websocket.SpringWebSocketHandler"></bean>
+ 
+<!-- 
+	<bean id="commentJmsContainer"
+		class="org.springframework.jms.listener.DefaultMessageListenerContainer">
+		<property name="connectionFactory" ref="connectionFactory" />
+		<property name="destination" ref="commentDestination" />
+		<property name="messageListener" ref="acneCommentConsumer" />
+		AUTO_ACKNOWLEDGE for 1, CLIENT_ACKNOWLEDGE for 2, DUPS_OK_ACKNOWLEDGE for 3, SESSION_TRANSACTED for 4
+		<property name="sessionAcknowledgeMode" value="2"></property>
+	</bean>
+-->
 
 	<!-- 消息监听容器 -->
 	<bean id="jmsContainer"

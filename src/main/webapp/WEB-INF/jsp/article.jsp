@@ -52,8 +52,7 @@
 					}
 				%>
 			</h1>
-			<p class="lead blog-description"
-				style="margin-bottom: 10px; margin-top: 10px; font-size: 15px;">
+			<p class="lead blog-description" style="margin-bottom: 10px; margin-top: 10px; font-size: 15px;">
 				<%
 					if (map != null) {
 						String username = map.get("username").toString();

@@ -7,13 +7,11 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.session.Session;
-import org.apache.shiro.subject.Subject;
 import org.json.JSONArray;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,6 +26,7 @@ import com.acne.service.AcneUserService;
 import com.acne.service.ArticleService;
 import com.acne.util.ObjectUtil;
 import com.acne.util.StringUtil;
+import com.acne.websocket.SpringWebSocketHandler;
 import com.github.pagehelper.PageInfo;
 
 @Controller
@@ -48,6 +47,11 @@ public class ArticleController {
 
 	@Autowired
 	AcneApplicationCtx applicationCtx;
+
+	@Bean
+	public SpringWebSocketHandler springWebSocketHandler() {
+		return new SpringWebSocketHandler();
+	}
 
 	/**
 	 * 获取多页的博文
@@ -78,10 +82,11 @@ public class ArticleController {
 		ModelAndView mView = new ModelAndView();
 		mView.addObject("acneNum", acneNum);
 		mView.addObject("antiNum", antiNum);
-		mView.setViewName("index");
 		mView.addObject("articles", list);
 		mView.addObject("pages", pages);
 		mView.addObject("current", pageNo);
+		mView.setViewName("index");
+
 		return mView;
 	}
 
@@ -162,12 +167,12 @@ public class ArticleController {
 			"application/json; charset=UTF-8" })
 	@ResponseBody
 	public String postedArticle(HttpServletRequest request, HttpServletResponse response) {
-		
+
 		Long userId = StringUtil.StringToLong(request.getParameter("antiUserId"));
 		if (userId == Long.MIN_VALUE) {
 			userId = ObjectUtil.ObjectToLong(request.getSession().getAttribute("userId"));
 		}
-		
+
 		List<Article> articles = articleService.queryPostedArticle(userId);
 		JSONArray array = new JSONArray(articles);
 
@@ -238,6 +243,7 @@ public class ArticleController {
 
 	/**
 	 * 删除博文
+	 * 
 	 * @param request
 	 * @param response
 	 * @return
@@ -245,11 +251,11 @@ public class ArticleController {
 	@RequestMapping(value = "delete/article", method = RequestMethod.GET)
 	@ResponseBody
 	public String deleteArticle(HttpServletRequest request, HttpServletResponse response) {
-		
+
 		String articleId = request.getParameter("articleId");
-		
+
 		logger.info("delete article Id: {}", articleId);
-		
+
 		articleService.deleteByPrimaryKey(StringUtil.StringToLong(articleId));
 		return MSG_SUCCESS;
 	}

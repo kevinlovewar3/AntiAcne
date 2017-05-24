@@ -146,8 +146,14 @@
 	<script>
 		function addMessage(acneUserId, i) {
 			var comment = $('#comment-' + i).val();
-			console.log(comment);
-			$.get('/acne/comments', { acneUserId : acneUserId, comment : comment }, function(data) { console.log(data); });
+			$.get('/acne/comments', { acneUserId : acneUserId, comment : comment }, function(data) {
+				if (data.message == 'success'){
+					$('#comment-' + i).val('');
+					alert('success!');
+				} else {
+					alert('failed!');
+				}
+			});
 		}
 	</script>
 
