@@ -353,5 +353,22 @@ public class AcneUserController {
 		JSONObject acneUserJsonObj = new JSONObject(acneUser);
 		return acneUserJsonObj.toString();
 	}
+	
+	/**
+	 * œ‘ æ∆¿¬€“≥√Ê
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping(value = "check_comments/{imageId}", method = RequestMethod.GET)
+	@ResponseBody
+	public ModelAndView getComments(HttpServletRequest request, HttpServletResponse response){
+		ModelAndView mView = new ModelAndView("acne_comment");
+		Object imageIdObj = request.getParameter("imageId");
+		Long imageId = ObjectUtil.ObjectToLong(imageIdObj);
+		
+		
+		return mView;
+	}
 
 }

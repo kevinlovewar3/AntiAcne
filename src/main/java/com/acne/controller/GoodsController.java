@@ -1,5 +1,6 @@
 package com.acne.controller;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -30,12 +31,12 @@ public class GoodsController {
 
 	@Autowired
 	GoodsService goodsService;
-	
+
 	@RequestMapping(value = "goods-self", method = RequestMethod.GET)
 	@ResponseBody
 	public ModelAndView getSelfGoods(HttpServletRequest request, HttpServletResponse response) {
 		ModelAndView mView = new ModelAndView("goods_temp");
-		
+
 		return mView;
 	}
 
@@ -67,6 +68,7 @@ public class GoodsController {
 
 	/**
 	 * 获取祛痘达人发布的产品
+	 * 
 	 * @param request
 	 * @param response
 	 * @return
@@ -75,16 +77,45 @@ public class GoodsController {
 			"application/json; charset=UTF-8" })
 	@ResponseBody
 	public String postedGoods(HttpServletRequest request, HttpServletResponse response) {
-		
+
 		Long userId = StringUtil.StringToLong(request.getParameter("antiUserId"));
 		if (userId == Long.MIN_VALUE) {
 			userId = ObjectUtil.ObjectToLong(request.getSession().getAttribute("userId"));
 		}
-		
+
 		List<GoodsWithBLOBs> goodsWithBLOBs = goodsService.queryPostedGoods(userId);
 		logger.info("/acne/posted_goods, GoodsWithBLOBs: {}", goodsWithBLOBs);
 		JSONArray array = new JSONArray(goodsWithBLOBs);
 		return array.toString();
+	}
+
+	/**
+	 * 用户上传产品
+	 * 
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping(value = "add_goods", method = RequestMethod.POST)
+	@ResponseBody
+	public String postGoods(HttpServletRequest request, HttpServletResponse response) {
+
+		Object userIdObj = request.getSession().getAttribute("userId");
+		Long userId = ObjectUtil.ObjectToLong(userIdObj);
+		GoodsWithBLOBs goodsWithBLOBs = new GoodsWithBLOBs();
+		String title = request.getParameter("title");
+		String content = request.getParameter("content");
+		Date date = new Date();
+		goodsWithBLOBs.setAvailable(1);
+		goodsWithBLOBs.setBrowsenum(0);
+		goodsWithBLOBs.setDescription(content);
+		goodsWithBLOBs.setGoodsname(title);
+		goodsWithBLOBs.setScore(0);
+		goodsWithBLOBs.setUploaddate(date);
+
+		goodsService.addGoods(userId, goodsWithBLOBs);
+
+		return "{\"message\":\"success\"}";
 	}
 
 	/**
@@ -111,10 +142,44 @@ public class GoodsController {
 		JSONArray array = new JSONArray(goodsWithBLOBs);
 		return array.toString();
 	}
-	
+
+	/**
+	 * 产品详情页面
+	 * 
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping(value = "goods_home/{goodsId}", method = RequestMethod.GET)
+	@ResponseBody
+	public ModelAndView getGoodsHome(HttpServletRequest request, HttpServletResponse response) {
+		ModelAndView mView = new ModelAndView("goods_home");
+
+		String uri = request.getRequestURI();
+		int index = uri.lastIndexOf("/");
+		String goodsIdStr = uri.substring(index + 1, uri.length());
+		Long goodsId = StringUtil.StringToLong(goodsIdStr);
+		
+		logger.info("Request info: {}", goodsId);
+		
+		GoodsWithBLOBs goodsWithBLOBs = goodsService.queryGoodsByGoodsId(goodsId);
+		mView.addObject("goods", goodsWithBLOBs);
+		
+		logger.info("Response info: {}", goodsWithBLOBs);
+
+		return mView;
+	}
+
+	/**
+	 * 上传图片页面
+	 * 
+	 * @param request
+	 * @param response
+	 * @return
+	 */
 	@RequestMapping(value = "post_goods", method = RequestMethod.GET)
 	@ResponseBody
-	public ModelAndView postGoods(HttpServletRequest request, HttpServletResponse response){
+	public ModelAndView getGoodsReadOnly(HttpServletRequest request, HttpServletResponse response) {
 		ModelAndView mView = new ModelAndView("post_goods");
 		return mView;
 	}

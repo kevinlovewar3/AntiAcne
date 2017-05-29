@@ -72,6 +72,9 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 				<!-- 推送消息接口 -->
 				/websocket/socketserver**=anon
 				/sockjs/websocket/socketserver**=anon
+				
+				<!-- 查看图片 -->
+				/check_comments**=anon
 				<!-- 发表评论 -->
 				/comments**=anon
 				<!-- 只读查看祛痘达人上传的文章和产品 -->

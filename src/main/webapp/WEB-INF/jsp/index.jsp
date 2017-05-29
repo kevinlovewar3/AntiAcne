@@ -1,3 +1,4 @@
+<%@page import="com.acne.util.StringUtil"%>
 <%@page import="com.acne.util.ObjectUtil"%>
 <%@page import="com.acne.util.HtmlRegexpUtil"%>
 <%@page import="org.slf4j.LoggerFactory"%>
@@ -96,6 +97,7 @@ body {
 							String username = request.getSession().getAttribute("username").toString();
 							out.print(username);
 							out.print("<span class='caret'></span>");
+							out.print("<span id='badge' class='badge'></span>");
 							out.print("</a>");
 							out.print("<ul class='dropdown-menu'>");
 							out.print("<li style='margin: 0 auto;'><a href='/acne/acneuser'>个人首页</a></li>");
@@ -296,7 +298,6 @@ body {
 	</div>
 	<!--/.container-->
 
-
 	<!-- Bootstrap core JavaScript
     ================================================== -->
 	<!-- Placed at the end of the document so the pages load faster -->
@@ -309,6 +310,7 @@ body {
 	<script src="res/js/offcanvas.js"></script>
 	<script charset="utf-8">
 		$(document).ready(function() {
+			
 							$('#myModal').on('shown.bs.modal', function() {
 								$('#suggest').focus();
 							});
@@ -389,16 +391,30 @@ body {
 						}
 					});
 					
-					<%Object userIdObj = request.getSession().getAttribute("userId");
+					<%
+					Object userIdObj = request.getSession().getAttribute("userId");
+					Object userTypeObj = request.getSession().getAttribute("userType");
 			Long userId = null;
+			String userType = null;
 			if (userIdObj != null) {
 				userId = ObjectUtil.ObjectToLong(userIdObj);
-			}%>
+			}
+			if(userTypeObj != null){
+				userType = ObjectUtil.ObjectToString(userTypeObj);
+			}
+			%>
 					var userId = <%=userId%>;
-					if(userId != null){
+					var userType = '<%=userType%>';
+					
+					console.log(userId);
+					console.log(userType);
+					
+					if(userId != null && userType == 'acne_user'){
+						
 						var websocket = null;
 						if ('WebSocket' in window) {
 							websocket = new WebSocket("ws://localhost:8080/acne/websocket/socketserver");
+							console.log('connect to web socket.');
 						} else if ('MozWebSocket' in window) {
 						    websocket = new MozWebSocket("ws://localhost:8080/acne/websocket/socketserver");
 						} else {
@@ -408,17 +424,26 @@ body {
 						websocket.onmessage = onMessage;
 						websocket.onerror = onError;
 						websocket.onclose = onClose;
+						
+						$(window).on('beforeunload', function(){
+							websocket.close();
+						});
 						  
 						function onOpen(evt) {
+							console.log('open');
+							console.log(evt);
 						}
 						function onMessage(evt) {
-							var arr = [];
-							arr = JSON.parse(evt.data);
-							
+							var arr = JSON.parse(evt.data);
+							$('#badge').text(arr.length);
 						}
 						function onError(evt) {
+							console.log('error');
+							console.log(evt);
 						}
 						function onClose(evt) {
+							console.log('close');
+							console.log(evt);
 						}
 						function doSend() {
 							if (websocket.readyState == websocket.OPEN) {

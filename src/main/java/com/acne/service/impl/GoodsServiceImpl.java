@@ -38,4 +38,19 @@ public class GoodsServiceImpl implements GoodsService {
 	public List<GoodsWithBLOBs> queryPostedGoods(Long userId) {
 		return goodsMapper.queryPostedGoods(userId);
 	}
+
+	@Override
+	public void addGoods(Long antiUserId, GoodsWithBLOBs goodsWithBLOBs) {
+		goodsMapper.insertSelective(goodsWithBLOBs);
+		Long goodsId = goodsWithBLOBs.getGoodsid();
+		goodsMapper.insertAntiSelective(antiUserId, goodsId);
+	}
+
+	@Override
+	public GoodsWithBLOBs queryGoodsByGoodsId(Long goodsId) {
+
+		GoodsWithBLOBs goodsWithBLOBs = goodsMapper.selectByPrimaryKey(goodsId);
+
+		return goodsWithBLOBs;
+	}
 }

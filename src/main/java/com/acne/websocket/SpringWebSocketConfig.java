@@ -3,6 +3,7 @@ package com.acne.websocket;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.springframework.web.socket.config.annotation.EnableWebSocket;
@@ -16,6 +17,7 @@ public class SpringWebSocketConfig extends WebMvcConfigurerAdapter implements We
 	Logger logger = LoggerFactory.getLogger(SpringWebSocketConfig.class);
 
 	@Autowired
+	@Qualifier("springWebSocketHandler")
 	SpringWebSocketHandler springWebSocketHandler;
 
 	@Override
