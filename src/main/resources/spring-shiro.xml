@@ -10,12 +10,10 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 
 	<!-- 数据库保存的密码是使用MD5算法加密的，所以这里需要配置一个密码匹配对象 -->
 	<bean id="credentialsMatcher" class="org.apache.shiro.authc.credential.Md5CredentialsMatcher">
-		<!--加密的策略
-		<property name="hashAlgorithmName" value="SHA1" />
-		加密的次数
-		<property name="hashIterations" value="10" />
-		-->
-		<!-- Shiro报错-[org.apache.shiro.mgt.AbstractRememberMeManager] - There was a failure while trying to retrieve remembered principals. -->
+		<!--加密的策略 <property name="hashAlgorithmName" value="SHA1" /> 加密的次数 <property 
+			name="hashIterations" value="10" /> -->
+		<!-- Shiro报错-[org.apache.shiro.mgt.AbstractRememberMeManager] - There was 
+			a failure while trying to retrieve remembered principals. -->
 		<property name="storedCredentialsHexEncoded" value="true" />
 	</bean>
 
@@ -70,6 +68,13 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 				/css/**=anon
 				/js/**=anon
 				/img/**=anon
+
+				<!-- 推送消息接口 -->
+				/websocket/socketserver**=anon
+				/sockjs/websocket/socketserver**=anon
+				
+				<!-- 查看图片 -->
+				/check_comments**=anon
 				<!-- 发表评论 -->
 				/comments**=anon
 				<!-- 只读查看祛痘达人上传的文章和产品 -->

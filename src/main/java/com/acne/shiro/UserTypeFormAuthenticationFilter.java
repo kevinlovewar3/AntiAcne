@@ -102,8 +102,8 @@ public class UserTypeFormAuthenticationFilter extends FormAuthenticationFilter {
 				logger.info("Login page view.");
 			}
 		} else {
-			logger.info("Attempting to access a path which requires authentication.  {}"
-					+ httpServletRequest.getRequestURI());
+			logger.info("Attempting to access a path which requires authentication. {}",
+					httpServletRequest.getRequestURI());
 		}
 
 		return super.onAccessDenied(request, response);

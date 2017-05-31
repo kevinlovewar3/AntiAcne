@@ -145,8 +145,8 @@
 							out.print("<label class='btn btn-default' onclick='onDelete(" + imageId
 									+ ")'><input type='radio' name='options' autocomplete='off'>删除</label>");
 							out.print("</div></div>");
-							out.print("<img alt='Card image cap' style='height: 280px; width: 360px;' src='/acne/image/"
-									+ acneImage.getPath() + "'>");
+							out.print("<a href='/acne/check_comments/"+imageId+"'><img alt='Card image cap' style='height: 280px; width: 360px;' src='/acne/image/"
+									+ acneImage.getPath() + "'></a>");
 							out.print("</div>");
 							out.print("<div style='font-size: 14px; color: #ababab;'>简述：" + acneImage.getDesc() + "</div>");
 							out.print("</div>");

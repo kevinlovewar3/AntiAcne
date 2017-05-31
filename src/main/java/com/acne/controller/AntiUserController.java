@@ -1,5 +1,6 @@
 package com.acne.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.jms.JMSException;
@@ -10,18 +11,22 @@ import org.json.JSONArray;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.socket.TextMessage;
 
+import com.acne.model.AcneComment;
 import com.acne.model.AntiAcneUser;
 import com.acne.model.Article;
 import com.acne.producer.AcneCommentProducer;
 import com.acne.service.AntiUserService;
 import com.acne.service.ArticleService;
 import com.acne.util.StringUtil;
+import com.acne.websocket.SpringWebSocketHandler;
 
 @Controller
 @RequestMapping(value = "/")
@@ -37,6 +42,10 @@ public class AntiUserController {
 
 	@Autowired
 	AcneCommentProducer acneCommentProducer;
+
+	@Autowired
+	@Qualifier("springWebSocketHandler")
+	SpringWebSocketHandler springWebSocketHandler;
 
 	/**
 	 * 治痘达人首页
@@ -135,6 +144,7 @@ public class AntiUserController {
 
 	/**
 	 * 祛痘达人发表评论
+	 * 
 	 * @param request
 	 * @param response
 	 * @return
@@ -144,17 +154,27 @@ public class AntiUserController {
 	public String postComments(HttpServletRequest request, HttpServletResponse response) {
 		String acneUserId = request.getParameter("acneUserId");
 		String comment = request.getParameter("comment");
-		String queue = "queue/" + acneUserId;
-		
+
 		logger.info("acneUserId: {}, comment: {}", acneUserId, comment);
-		
-		try {
-			acneCommentProducer.send(queue, comment);
-		} catch (JMSException e) {
-			logger.error("send comment error, error message is: {}", e.getLocalizedMessage());
-			e.printStackTrace();
-			return "{\"message\":\"fail\"}";
+		Long userId = StringUtil.StringToLong(acneUserId);
+		if (springWebSocketHandler.isUserOnline(userId)) {
+			List<String> comments = new ArrayList<>();
+			comments.add(comment);
+			JSONArray array = new JSONArray(comments);
+			TextMessage message = new TextMessage(array.toString());
+			springWebSocketHandler.sendMessageToUser(userId, message);
+		} else {
+			try {
+				acneCommentProducer.send(StringUtil.StringToLong(acneUserId), comment);
+			} catch (JMSException e) {
+				logger.error("send comment error, error message is: {}", e.getLocalizedMessage());
+				e.printStackTrace();
+				return "{\"message\":\"fail\"}";
+			}
 		}
+
+		// sync to database
+
 		return "{\"message\":\"success\"}";
 	}
 

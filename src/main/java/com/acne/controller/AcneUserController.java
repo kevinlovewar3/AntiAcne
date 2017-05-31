@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
-import java.util.Map;
 
 import javax.jms.JMSException;
 import javax.servlet.http.HttpServletRequest;
@@ -27,7 +26,6 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.acne.constant.Constants;
-import com.acne.consumer.AcneCommentConsumer;
 import com.acne.model.AcneImage;
 import com.acne.model.AcneUser;
 import com.acne.service.AcneImageService;
@@ -51,9 +49,6 @@ public class AcneUserController {
 
 	@Autowired
 	AcneImageService acneImageService;
-	
-	@Autowired
-	AcneCommentConsumer acneCommentConsumer;
 
 	/**
 	 * 痘痘患者首页
@@ -61,17 +56,12 @@ public class AcneUserController {
 	 * @param request
 	 * @param response
 	 * @return
-	 * @throws JMSException 
+	 * @throws JMSException
 	 */
 	@RequestMapping(value = "acneuser", method = RequestMethod.GET)
 	@ResponseBody
 	public ModelAndView acneUser(HttpServletRequest request, HttpServletResponse response) throws JMSException {
 		ModelAndView mView = new ModelAndView("acneuser");
-		Object userIdObj = request.getSession().getAttribute("userId");
-		String queue = "queue/" + userIdObj.toString();
-		acneCommentConsumer.setQueue(queue);
-		acneCommentConsumer.createQueue();
-		
 		return mView;
 	}
 
@@ -290,7 +280,7 @@ public class AcneUserController {
 		if (description == null) {
 			description = "";
 		}
-		
+
 		if (file != null) {
 			int position = file.getOriginalFilename().lastIndexOf(".");
 			String append = file.getOriginalFilename().substring(position, file.getOriginalFilename().length());
@@ -362,6 +352,23 @@ public class AcneUserController {
 		logger.info("AcneUser Detail info is: {}", acneUser);
 		JSONObject acneUserJsonObj = new JSONObject(acneUser);
 		return acneUserJsonObj.toString();
+	}
+	
+	/**
+	 * 显示评论页面
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping(value = "check_comments/{imageId}", method = RequestMethod.GET)
+	@ResponseBody
+	public ModelAndView getComments(HttpServletRequest request, HttpServletResponse response){
+		ModelAndView mView = new ModelAndView("acne_comment");
+		Object imageIdObj = request.getParameter("imageId");
+		Long imageId = ObjectUtil.ObjectToLong(imageIdObj);
+		
+		
+		return mView;
 	}
 
 }

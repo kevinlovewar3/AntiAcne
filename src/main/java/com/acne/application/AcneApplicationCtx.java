@@ -10,8 +10,10 @@ public class AcneApplicationCtx implements ApplicationContextAware {
 
 	private Object acneNumLock = new Object();
 	private Object antiNumLock = new Object();
+	private Object onlineLock = new Object();
 	private Integer acneNum = 0;
 	private Integer antiNum = 0;
+	private Integer onlineNum = 0;
 
 	@Override
 	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
@@ -26,10 +28,30 @@ public class AcneApplicationCtx implements ApplicationContextAware {
 		antiNum = num;
 	}
 
+	public void setOnlineNum(Integer num) {
+		onlineNum = num;
+	}
+
 	public void increaseAcneNum() {
 		synchronized (acneNumLock) {
 			acneNum++;
 		}
+	}
+
+	public void increaseOnlineNum() {
+		synchronized (onlineLock) {
+			onlineNum++;
+		}
+	}
+
+	public void decreaseOnlineNum() {
+		synchronized (onlineLock) {
+			onlineNum--;
+		}
+	}
+
+	public Integer getOnlineNum() {
+		return onlineNum;
 	}
 
 	public Integer getAcneNum() {

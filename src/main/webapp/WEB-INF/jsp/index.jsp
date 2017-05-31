@@ -1,3 +1,5 @@
+<%@page import="com.acne.util.StringUtil"%>
+<%@page import="com.acne.util.ObjectUtil"%>
 <%@page import="com.acne.util.HtmlRegexpUtil"%>
 <%@page import="org.slf4j.LoggerFactory"%>
 <%@page import="org.apache.shiro.subject.Subject"%>
@@ -95,6 +97,7 @@ body {
 							String username = request.getSession().getAttribute("username").toString();
 							out.print(username);
 							out.print("<span class='caret'></span>");
+							out.print("<span id='badge' class='badge'></span>");
 							out.print("</a>");
 							out.print("<ul class='dropdown-menu'>");
 							out.print("<li style='margin: 0 auto;'><a href='/acne/acneuser'>个人首页</a></li>");
@@ -188,7 +191,6 @@ body {
 						out.print("&nbsp;&nbsp;0 " + "位专家推荐");
 						out.print("</div>");
 						out.print("</div>");
-
 					}
 
 					if (list.size() == 0) {
@@ -293,24 +295,22 @@ body {
 				</p>
 			</div>
 		</footer>
-
 	</div>
 	<!--/.container-->
-
 
 	<!-- Bootstrap core JavaScript
     ================================================== -->
 	<!-- Placed at the end of the document so the pages load faster -->
 	<script src="res/js/jquery-3.1.1.slim.min.js"></script>
 	<script src="res/js/jquery-3.1.1.min.js"></script>
-	<script
-		src="res/js/tether.min.js"></script>
+	<script src="res/js/tether.min.js"></script>
 	<script src="res/js/bootstrap.min.js"></script>
 	<!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
 	<script src="res/js/ie10-viewport-bug-workaround.js"></script>
 	<script src="res/js/offcanvas.js"></script>
 	<script charset="utf-8">
 		$(document).ready(function() {
+			
 							$('#myModal').on('shown.bs.modal', function() {
 								$('#suggest').focus();
 							});
@@ -318,81 +318,141 @@ body {
 							$('#btn_submit').click(function(){
 								var userId =<%=request.getSession().getAttribute("userId")%>;
 								var userType ='<%=request.getSession().getAttribute("userType")%>';
-				var suggest = $('#text_suggest').val();
+						var suggest = $('#text_suggest').val();
 
-				if (suggest == '') {
-					$('#myModal').modal('hide');
-					return;
-				}
+						if (suggest == '') {
+							$('#myModal').modal('hide');
+							return;
+						}
 
-				$.post('/acne/post_suggest', {
-					userId : userId,
-					userType : userType,
-					suggest : suggest
-				}, function(data, status) {
-					$('#myModal').modal('hide');
-				});
-			});
-
-			$.get('/acne/recommands', {
-				size : 6
-			}, function(data, status) {
-				if (status == 'success') {
-					var recommand_html = '';
-
-					if (data.length == 0) {
-						recommand_html = '<div style="font-size: 15px; color: #999999;">无文章推荐</div>';
-					} else {
-						$.each(data, function(index, obj) {
-							var title = obj.title.substr(0, 10);
-							recommand_html += '<a href="/acne/article?articleId=' + obj.articleid + '" class="list-group-item">' + title + '</a>'
+						$.post('/acne/post_suggest', {
+							userId : userId,
+							userType : userType,
+							suggest : suggest
+						}, function(data, status) {
+							$('#myModal').modal('hide');
 						});
-					}
-					$("#list-articles").append(recommand_html);
-				}
+					});
 
-			});
-
-			$.get('/acne/anti/recommands', function(data, status) {
-				if (status == 'success') {
-					var recommand_html = '';
-
-					if (data.length == 0) {
-						recommand_html = '<div style="font-size: 15px; color: #999999;">无专家推荐</div>';
-					} else {
-						recommand_html += '<table>';
-						data.forEach(function(value, index, arr) {
-							var userId = value.userid;
-							var avatar = value.avatar;
-							var username = value.username;
-							var desc = value.description;
-							var title = value.title;
-							var titles = title.split('|');
-
-							if (avatar === undefined) {
-								avatar = 'res/img/default.png';
+					$.get('/acne/recommands', {
+						size : 6
+					}, function(data, status) {
+						if (status == 'success') {
+							var recommand_html = '';
+							if (data.length == 0) {
+								recommand_html = '<div style="font-size: 15px; color: #999999;">无文章推荐</div>';
 							} else {
-								avatar = '/acne/image/avatar/' + avatar;
+								$.each(data, function(index, obj) {
+									var title = obj.title.substr(0, 10);
+									recommand_html += '<a href="/acne/article?articleId=' + obj.articleid + '" class="list-group-item">' + title + '</a>'
+								});
 							}
+							$("#list-articles").append(recommand_html);
+						}
+					});
 
-							recommand_html += '<tr>';
-							recommand_html += '<td style="width: 100px; height: 80px;">';
-							recommand_html += '<a href="/acne/anti_home?antiUserId='+userId+'" title="'+desc+'" class="thumbnail"><img style="width: 100px; height: 80px;" src="'+avatar+'" alt="avatar"></a>';
-							recommand_html += '</td>';
-							recommand_html += '<td style="padding-left: 10px;">';
-							recommand_html += '<span><b>' + username + '</b></span>';
-							recommand_html += '<div class="tip"><span>' + titles[0] + '年护肤经验<br />';
-							recommand_html += titles[1] + '</span></div>';
-							recommand_html += '</td>';
-							recommand_html += '</tr>';
+					$.get('/acne/anti/recommands', function(data, status) {
+						if (status == 'success') {
+							var recommand_html = '';
 
+							if (data.length == 0) {
+								recommand_html = '<div style="font-size: 15px; color: #999999;">无专家推荐</div>';
+							} else {
+								recommand_html += '<table>';
+								data.forEach(function(value, index, arr) {
+									var userId = value.userid;
+									var avatar = value.avatar;
+									var username = value.username;
+									var desc = value.description;
+									var title = value.title;
+									var titles = title.split('|');
+
+									if (avatar === undefined) {
+										avatar = 'res/img/default.png';
+									} else {
+										avatar = '/acne/image/avatar/' + avatar;
+									}
+
+									recommand_html += '<tr>';
+									recommand_html += '<td style="width: 100px; height: 80px;">';
+									recommand_html += '<a href="/acne/anti_home?antiUserId=' + userId + '" title="' + desc
+											+ '" class="thumbnail"><img style="width: 100px; height: 80px;" src="'+avatar+'" alt="avatar"></a>';
+									recommand_html += '</td>';
+									recommand_html += '<td style="padding-left: 10px;">';
+									recommand_html += '<span><b>' + username + '</b></span>';
+									recommand_html += '<div class="tip"><span>' + titles[0] + '年护肤经验<br />';
+									recommand_html += titles[1] + '</span></div>';
+									recommand_html += '</td>';
+									recommand_html += '</tr>';
+								});
+								recommand_html += '<table>';
+							}
+							$('#list-anti-users').html(recommand_html);
+						}
+					});
+					
+					<%
+					Object userIdObj = request.getSession().getAttribute("userId");
+					Object userTypeObj = request.getSession().getAttribute("userType");
+			Long userId = null;
+			String userType = null;
+			if (userIdObj != null) {
+				userId = ObjectUtil.ObjectToLong(userIdObj);
+			}
+			if(userTypeObj != null){
+				userType = ObjectUtil.ObjectToString(userTypeObj);
+			}
+			%>
+					var userId = <%=userId%>;
+					var userType = '<%=userType%>';
+					
+					console.log(userId);
+					console.log(userType);
+					
+					if(userId != null && userType == 'acne_user'){
+						
+						var websocket = null;
+						if ('WebSocket' in window) {
+							websocket = new WebSocket("ws://localhost:8080/acne/websocket/socketserver");
+							console.log('connect to web socket.');
+						} else if ('MozWebSocket' in window) {
+						    websocket = new MozWebSocket("ws://localhost:8080/acne/websocket/socketserver");
+						} else {
+						    websocket = new SockJS("ws://localhost:8080/acne/sockjs/websocket/socketserver");
+						}
+						websocket.onopen = onOpen;
+						websocket.onmessage = onMessage;
+						websocket.onerror = onError;
+						websocket.onclose = onClose;
+						
+						$(window).on('beforeunload', function(){
+							websocket.close();
 						});
-						recommand_html += '<table>';
+						  
+						function onOpen(evt) {
+							console.log('open');
+							console.log(evt);
+						}
+						function onMessage(evt) {
+							var arr = JSON.parse(evt.data);
+							$('#badge').text(arr.length);
+						}
+						function onError(evt) {
+							console.log('error');
+							console.log(evt);
+						}
+						function onClose(evt) {
+							console.log('close');
+							console.log(evt);
+						}
+						function doSend() {
+							if (websocket.readyState == websocket.OPEN) {
+						    		websocket.send('hello world!');//调用后台handleTextMessage方法
+						    } else {
+						    }
+						}
 					}
-					$('#list-anti-users').html(recommand_html);
-				}
-			});
-		});
+				});
 	</script>
 </body>
 </html>
