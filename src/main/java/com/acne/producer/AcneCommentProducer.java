@@ -16,6 +16,8 @@ public class AcneCommentProducer {
 	@Autowired
 	CachingConnectionFactory connectionFactory;
 
+	
+	
 	MessageProducer producer;
 	Connection connection;
 	Session session;
@@ -31,6 +33,7 @@ public class AcneCommentProducer {
 		
 		TextMessage msg = session.createTextMessage(message);
 		producer.send(msg);
+		connection.close();
 		
 	}
 }

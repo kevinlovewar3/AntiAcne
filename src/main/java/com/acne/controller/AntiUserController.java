@@ -145,6 +145,9 @@ public class AntiUserController {
 		String acneUserId = request.getParameter("acneUserId");
 		String comment = request.getParameter("comment");
 		String queue = "queue/" + acneUserId;
+		
+		logger.info("acneUserId: {}, comment: {}", acneUserId, comment);
+		
 		try {
 			acneCommentProducer.send(queue, comment);
 		} catch (JMSException e) {

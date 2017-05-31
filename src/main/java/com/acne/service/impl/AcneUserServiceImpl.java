@@ -35,6 +35,8 @@ public class AcneUserServiceImpl implements AcneUserService {
 
 	@Override
 	public void insertViewedArticle(final Long articleId, final Long userId) {
+		
+		Destination destination = new De
 
 		jmsTemplate.send(destination, new MessageCreator() {
 
