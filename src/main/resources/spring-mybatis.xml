@@ -22,12 +22,7 @@
 	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"
 		destroy-method="close">
 		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
-		<property name="url"
-<<<<<<< HEAD
-			value="jdbc:mysql://localhost:3306/acne?autoReconnect=true&amp;useUnicode=true&amp;characterEncoding=utf8&amp;useSSL=false" />
-=======
-			value="jdbc:mysql://10.75.189.108:3306/acne?autoReconnect=true&amp;useUnicode=true&amp;characterEncoding=utf8&amp;useSSL=false" />
->>>>>>> dad2190a80deff6addf1992c9f18b5293722351c
+		<property name="url" value="jdbc:mysql://localhost:3306/acne?autoReconnect=true&amp;useUnicode=true&amp;characterEncoding=utf8&amp;useSSL=false" />
 		<property name="username" value="cisco" />
 		<property name="password" value="cisco" />
 		<!-- 初始化连接大小 -->
@@ -72,12 +67,8 @@
 	<bean id="connectionFactory"
 		class="org.springframework.jms.connection.CachingConnectionFactory">
 		<constructor-arg ref="amqConnectionFactory" />
-<<<<<<< HEAD
 		<!-- Session缓存数量 -->
 		<property name="sessionCacheSize" value="100" />
-=======
-		<property name="sessionCacheSize" value="100"></property>
->>>>>>> dad2190a80deff6addf1992c9f18b5293722351c
 	</bean>
 
 	<!-- Spring JmsTemplate 的消息生产者 start -->
@@ -105,12 +96,24 @@
 
 	<bean id="acneCommentProducer" class="com.acne.producer.AcneCommentProducer"></bean>
 
-<<<<<<< HEAD
-	<bean id="acneCommentConsumer" class="com.acne.consumer.AcneCommentConsumer"></bean>
-=======
 	<bean id="acneCommentConsumer" class="com.acne.consumer.AcneCommentConsumer">
 		<constructor-arg ref="connectionFactory"></constructor-arg>
 		<constructor-arg ref="commentDestination"></constructor-arg>
+	</bean>
+	
+	<!--这个是队列目的地，点对点的 -->
+	<bean id="queueDestination" class="org.apache.activemq.command.ActiveMQQueue">
+		<constructor-arg>
+			<value>queue</value>
+		</constructor-arg>
+	</bean>
+	
+	<!-- 消息监听容器 -->
+	<bean id="jmsContainer"
+		class="org.springframework.jms.listener.DefaultMessageListenerContainer">
+		<property name="connectionFactory" ref="connectionFactory" />
+		<property name="destination" ref="queueDestination" />
+		<property name="messageListener" ref="consumer" />
 	</bean>
 	
 	<bean id="springWebSocketHandler" class="com.acne.websocket.SpringWebSocketHandler"></bean>
@@ -125,6 +128,6 @@
 		<property name="sessionAcknowledgeMode" value="2"></property>
 	</bean>
 -->
->>>>>>> dad2190a80deff6addf1992c9f18b5293722351c
+
 
 </beans>

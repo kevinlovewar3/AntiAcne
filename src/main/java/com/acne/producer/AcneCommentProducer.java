@@ -19,29 +19,6 @@ public class AcneCommentProducer {
 	Destination commentDestination;
 
 	@Autowired
-<<<<<<< HEAD
-	CachingConnectionFactory connectionFactory;
-
-	
-	
-	MessageProducer producer;
-	Connection connection;
-	Session session;
-	Destination destination;
-
-	public void send(String queue, String message) throws JMSException {
-		connection = connectionFactory.createQueueConnection();
-		connection.start();
-		session = connection.createSession(Boolean.TRUE, Session.AUTO_ACKNOWLEDGE);
-		destination = session.createQueue(queue);
-		producer = session.createProducer(destination);
-		producer.setDeliveryMode(DeliveryMode.PERSISTENT);
-		
-		TextMessage msg = session.createTextMessage(message);
-		producer.send(msg);
-		connection.close();
-		
-=======
 	JmsTemplate jmsTemplate;
 
 	public void send(final Long userId, final String coment) throws JMSException {
@@ -64,6 +41,5 @@ public class AcneCommentProducer {
 				return null;
 			}
 		});
->>>>>>> dad2190a80deff6addf1992c9f18b5293722351c
 	}
 }
