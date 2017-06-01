@@ -1,6 +1,9 @@
 package com.acne.controller;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -15,8 +18,11 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.acne.constant.Constants;
 import com.acne.model.GoodsWithBLOBs;
 import com.acne.service.GoodsService;
 import com.acne.util.ObjectUtil;
@@ -95,21 +101,52 @@ public class GoodsController {
 	 * @param request
 	 * @param response
 	 * @return
+	 * @throws IOException 
 	 */
 	@RequestMapping(value = "add_goods", method = RequestMethod.POST)
 	@ResponseBody
-	public String postGoods(HttpServletRequest request, HttpServletResponse response) {
+	public String postGoods(MultipartHttpServletRequest fileRequest, HttpServletRequest request,
+			HttpServletResponse response) throws IOException {
 
 		Object userIdObj = request.getSession().getAttribute("userId");
 		Long userId = ObjectUtil.ObjectToLong(userIdObj);
 		GoodsWithBLOBs goodsWithBLOBs = new GoodsWithBLOBs();
-		String title = request.getParameter("title");
-		String content = request.getParameter("content");
+		String goodsName = request.getParameter("goodsName");
+		String goodsDescription = request.getParameter("description");
+
+		Iterator<String> itr = fileRequest.getFileNames();
+		StringBuilder sBuilder = new StringBuilder();
+		while (itr.hasNext()) {
+			MultipartFile file = fileRequest.getFile(itr.next());
+			
+			int position = file.getOriginalFilename().lastIndexOf(".");
+			String append = file.getOriginalFilename().substring(position, file.getOriginalFilename().length());
+			String fileName = System.currentTimeMillis() + append;
+
+			String path = Constants.GOODS_PATH + File.separator + fileName;
+			File tempFile = new File(path);
+			tempFile.getParentFile().mkdirs();
+			while (tempFile.exists()) {
+				fileName = System.currentTimeMillis() + append;
+				path = Constants.GOODS_PATH + File.separator + fileName;
+				tempFile = new File(path);
+			}
+			boolean result = tempFile.createNewFile();
+			if (result == false) {
+				return "{\"message\":\"failed\"}";
+			}
+			file.transferTo(new File(path));
+			sBuilder.append(fileName);
+		}
+		
+		logger.info("goods name: {}, goods description: {}", goodsName, goodsDescription);
+
 		Date date = new Date();
 		goodsWithBLOBs.setAvailable(1);
+		goodsWithBLOBs.setGoodspicture(sBuilder.toString());
 		goodsWithBLOBs.setBrowsenum(0);
-		goodsWithBLOBs.setDescription(content);
-		goodsWithBLOBs.setGoodsname(title);
+		goodsWithBLOBs.setDescription(goodsDescription);
+		goodsWithBLOBs.setGoodsname(goodsName);
 		goodsWithBLOBs.setScore(0);
 		goodsWithBLOBs.setUploaddate(date);
 
@@ -159,12 +196,12 @@ public class GoodsController {
 		int index = uri.lastIndexOf("/");
 		String goodsIdStr = uri.substring(index + 1, uri.length());
 		Long goodsId = StringUtil.StringToLong(goodsIdStr);
-		
+
 		logger.info("Request info: {}", goodsId);
-		
+
 		GoodsWithBLOBs goodsWithBLOBs = goodsService.queryGoodsByGoodsId(goodsId);
 		mView.addObject("goods", goodsWithBLOBs);
-		
+
 		logger.info("Response info: {}", goodsWithBLOBs);
 
 		return mView;

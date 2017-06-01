@@ -13,14 +13,17 @@ public class Constants {
 			IMAGE_PATH = "/home/cisco/images/";
 			AVATAR_PATH = "/home/cisco/avatars/";
 			VALIDATOR_PATH = "/home/cisco/validators/";
+			GOODS_PATH = "/home/cisco/goods/";
 		} else if (platform.indexOf("Windows") != -1) {
 			IMAGE_PATH = "C:\\images\\";
 			AVATAR_PATH = "C:\\avatars\\";
 			VALIDATOR_PATH = "C:\\validators\\";
+			GOODS_PATH = "C:\\goods\\";
 		} else if(platform.indexOf("Mac")!= -1){
 			IMAGE_PATH = "/Users/yaan/Documents/temp/images/";
 			AVATAR_PATH = "/Users/yaan/Documents/temp/avatars/";
 			VALIDATOR_PATH = "/Users/yaan/Documents/temp/validators/";
+			GOODS_PATH = "/Users/yaan/Documents/temp/goods/";
 		}
 	}
 
@@ -29,4 +32,5 @@ public class Constants {
 	public static String IMAGE_PATH = "/Users/yaan/Documents/temp/images/";
 	public static String AVATAR_PATH = "/Users/yaan/Documents/temp/avatars/";
 	public static String VALIDATOR_PATH = "/Users/yaan/Documents/temp/validators/";
+	public static String GOODS_PATH = "/Users/yaan/Documents/temp/goods/";
 }
