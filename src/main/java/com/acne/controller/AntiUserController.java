@@ -25,6 +25,7 @@ import com.acne.model.Article;
 import com.acne.producer.AcneCommentProducer;
 import com.acne.service.AntiUserService;
 import com.acne.service.ArticleService;
+import com.acne.util.ObjectUtil;
 import com.acne.util.StringUtil;
 import com.acne.websocket.SpringWebSocketHandler;
 
@@ -57,7 +58,13 @@ public class AntiUserController {
 	@RequestMapping(value = "antiuser", method = RequestMethod.GET)
 	@ResponseBody
 	public ModelAndView antiUser(HttpServletRequest request, HttpServletResponse response) {
+		Object idObject = request.getSession().getAttribute("userId");
+		AntiAcneUser antiAcneUser = antiUserService.queryAntiUserById(ObjectUtil.ObjectToLong(idObject));
 		ModelAndView mView = new ModelAndView("antiuser");
+		mView.addObject("antiAcneUser", antiAcneUser);
+		
+		logger.info("AntiAcneUser: {}", antiAcneUser);
+		
 		return mView;
 	}
 

@@ -53,4 +53,9 @@ public class GoodsServiceImpl implements GoodsService {
 
 		return goodsWithBLOBs;
 	}
+
+	@Override
+	public void deleteGoods(Long goodsId) {
+		goodsMapper.deleteByPrimaryKey(goodsId);
+	}
 }

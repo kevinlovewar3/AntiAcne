@@ -28,7 +28,6 @@ public class ArticleServiceImpl implements ArticleService {
 
 	@Override
 	public int insert(Article record) {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 
@@ -47,7 +46,6 @@ public class ArticleServiceImpl implements ArticleService {
 
 	@Override
 	public int updateByPrimaryKeySelective(Article record) {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 

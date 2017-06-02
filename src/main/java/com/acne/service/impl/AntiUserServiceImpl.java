@@ -18,20 +18,29 @@ public class AntiUserServiceImpl implements AntiUserService {
 
 	@Override
 	public List<AntiAcneUser> queryRecommandsAntiUser() {
-
 		List<AntiAcneUser> antiAcneUsers = antiAcneUserMapper.selectRecommands();
 		return antiAcneUsers;
 	}
 
 	@Override
 	public List<Article> queryPostedArticle(Long userId) {
-		
+
 		return null;
 	}
 
 	@Override
 	public Integer queryAntiUserNum() {
 		return antiAcneUserMapper.queryAntiUserNum();
+	}
+
+	@Override
+	public AntiAcneUser queryAntiUserById(Long id) {
+		return antiAcneUserMapper.selectByPrimaryKey(id);
+	}
+
+	@Override
+	public void updateAntiUserById(AntiAcneUser antiAcneUser) {
+		antiAcneUserMapper.updateByPrimaryKeySelective(antiAcneUser);
 	}
 
 }
