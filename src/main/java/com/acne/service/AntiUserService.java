@@ -12,4 +12,8 @@ public interface AntiUserService {
 	List<Article> queryPostedArticle(Long userId);
 	
 	Integer queryAntiUserNum();
+	
+	AntiAcneUser queryAntiUserById(Long id);
+	
+	void updateAntiUserById(AntiAcneUser antiAcneUser);
 }

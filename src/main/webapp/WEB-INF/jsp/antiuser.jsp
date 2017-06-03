@@ -1,3 +1,7 @@
+<%@page import="java.text.SimpleDateFormat"%>
+<%@page import="com.acne.model.AntiAcneUser"%>
+<%@page import="java.util.Enumeration"%>
+<%@page import="java.util.Date"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <!DOCTYPE html>
@@ -29,6 +33,36 @@
 		</ul>
 		<br />
 
+		<div class="row">
+			<div class='col-lg-12'>
+				<h4>个人信息</h4>
+			</div>
+		</div>
+
+		<div class='row'>
+			<div class='col-lg-4'>
+				<img class="thumbnail" alt="avatar" src="res/img/default.png"
+					style='width: 200px; height: 200px;'>
+			</div>
+			<div class='col-lg-8'>
+				<div style="font-size: 16px; color: #444444;">
+					<%
+						AntiAcneUser antiAcneUser = (AntiAcneUser) request.getAttribute("antiAcneUser");
+
+						String description = antiAcneUser.getDescription();
+						Date registerDate = antiAcneUser.getRegisterdate();
+						String title = antiAcneUser.getTitle();
+						String[] titles = title.split("\\|");
+						SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+						out.print("注册日期: " + format.format(registerDate) + "<br />");
+						out.print("简介: " + description + "<br /><br />");
+						out.print("经验: " + titles[0] + "年<br />");
+						out.print("头衔: " + titles[1] + "<br />");
+					%>
+				</div>
+			</div>
+		</div>
+
 		<div class="row marketing">
 			<div class="col-lg-6">
 				<h4>发表的博文</h4>
@@ -41,9 +75,9 @@
 			</div>
 		</div>
 
-		<br />		
+		<br />
 		<footer class="footer">
-		<p>&copy; Company 2017</p>
+			<p>&copy; Company 2017</p>
 		</footer>
 
 	</div>
@@ -58,76 +92,99 @@
 	<!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
 	<script src="res/js/ie10-viewport-bug-workaround.js"></script>
 	<script charset="utf-8">
-	
-		function delete_article(articleId){
-			$.get('/acne/delete/article', {articleId: articleId}, function(data, status){
-				if(status == 'success'){
+		function delete_article(articleId) {
+			$.get('/acne/delete/article', {
+				articleId : articleId
+			}, function(data, status) {
+				if (status == 'success') {
 					location.reload();
 				}
 			});
 		}
-	
-		$(document).ready(function() {
 
-			$.get('/acne/posted_article', function(data, status) {
-
+		function delete_goods(goodsId) {
+			$.get('/acne/delete/goods', {
+				goodsId : goodsId
+			}, function(data, status) {
 				if (status == 'success') {
-					if (data.length == 0 || data == []) {
-						$('#article_hist').html('<div style="font-size: 15px; color: #999999;">未发表文章</div>');
-					} else {
-						var article_list_html = '';
-						$.each(data, function(index, obj) {
-							
-							var title = obj.title.substr(0, 10);
-							var articleId = obj.articleid;
-							var publishDate = obj.publishdate;
-							var viewtimes = obj.viewtimes;
-							var uptimes = obj.uptimes;
-							var downtimes = obj.downtimes;
-							
-							article_list_html += '<div>';
-							article_list_html += '<h4><a href="/acne/article?articleId=' + articleId + '">' + title + '</a></h4>';
-							article_list_html += '<div style="font-size: 15px; color: #ababab;">阅读：'+viewtimes+'&nbsp;&nbsp;';
-							article_list_html += '赞：' + uptimes + '&nbsp;&nbsp;';
-							article_list_html += '踩：' + downtimes + '&nbsp;&nbsp;';
-							article_list_html += '&nbsp;<a href="#" onclick="JavaScript:delete_article('+articleId+')">删除</a>';
-							article_list_html += '</div>';
-							
-							article_list_html += '</div>';
-						});
-						$('#article_hist').html(article_list_html);
-					}
-				} else {
-					$('#article_hist').html('<div style="font-size: 15px; color: #999999;">未发表文章</div>');
+					location.reload();
 				}
 			});
-			
-			
+		}
 
-			$.get('/acne/posted_goods', function(data, status) {
-				
-				if (status == 'success') {
-					if (data.length == 0 || data == []) {
-						$('#goods_hist').html('<div style="font-size: 15px; color: #999999;">未发布产品</div>');
-					} else {
-						var goods_list_html = '';
-						$.each(data, function(index, obj) {
-							var goodsName = obj.goodsName;
-							var desc = obj.description.substr(0, 10);
-							var uploadDate = obj.uploadDate;
+		$(document).ready(
+				function() {
 
-							console.log(goodsName + desc + uploadDate);
+					$.get('/acne/posted_article', function(data, status) {
 
-							goods_list_html += '<h4>' + goodsName + '</h4>';
-							goods_list_html += '<p>' + desc + '</p>';
-						});
-						$('#goods_hist').html(goods_list_html);
-					}
-				} else {
-					$('#goods_hist').html('<div style="font-size: 15px; color: #999999;">未发布产品</div>');
-				}
-			});
-		});
+						if (status == 'success') {
+							if (data.length == 0 || data == []) {
+								$('#article_hist').html('<div style="font-size: 15px; color: #999999;">未发表文章</div>');
+							} else {
+								var article_list_html = '';
+
+								$.each(data, function(index, obj) {
+
+									if (obj.title != undefined) {
+										var title = obj.title.substr(0, 10);
+										var articleId = obj.articleid;
+										var publishDate = obj.publishdate;
+										var viewtimes = obj.viewtimes;
+										var uptimes = obj.uptimes;
+										var downtimes = obj.downtimes;
+
+										article_list_html += '<div>';
+										article_list_html += '<h4><a href="/acne/article?articleId=' + articleId + '">'
+												+ title + '</a></h4>';
+										article_list_html += '<div style="font-size: 15px; color: #ababab;">阅读：'
+												+ viewtimes + '&nbsp;&nbsp;';
+										article_list_html += '赞：' + uptimes + '&nbsp;&nbsp;';
+										article_list_html += '踩：' + downtimes + '&nbsp;&nbsp;';
+										article_list_html += '&nbsp;<a href="#" onclick="JavaScript:delete_article('
+												+ articleId + ')">删除</a>';
+										article_list_html += '</div>';
+
+										article_list_html += '</div>';
+									}
+								});
+								$('#article_hist').html(article_list_html);
+							}
+						} else {
+							$('#article_hist').html('<div style="font-size: 15px; color: #999999;">未发表文章</div>');
+						}
+					});
+
+					$.get('/acne/posted_goods', function(data, status) {
+
+						if (status == 'success') {
+							if (data.length == 0 || data == []) {
+								$('#goods_hist').html('<div style="font-size: 15px; color: #999999;">未发布产品</div>');
+							} else {
+								var goods_list_html = '';
+								$.each(data, function(index, obj) {
+
+									var goodsName = obj.goodsname;
+									var uploadDate = obj.uploaddate;
+									var goodsid = obj.goodsid;
+									var browsenum = obj.browsenum;
+									var score = obj.score;
+
+									goods_list_html += '<a href="/acne/goods_home/"'+goodsid+'><h4>' + goodsName
+											+ '</h4></a>';
+									goods_list_html += '<div style="font-size: 15px; color: #ababab;">阅读: ';
+									goods_list_html += browsenum + '&nbsp;&nbsp;';
+									goods_list_html += '指数: ' + score + '&nbsp;&nbsp;';
+									goods_list_html += '&nbsp;<a href="#" onclick="JavaScript:delete_goods(' + goodsid
+											+ ')">删除</a>';
+									goods_list_html += '</div>';
+								});
+								$('#goods_hist').html(goods_list_html);
+							}
+						} else {
+							$('#goods_hist').html('<div style="font-size: 15px; color: #999999;">未发布产品</div>');
+						}
+					});
+				});
 	</script>
 </body>
 </html>

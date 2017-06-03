@@ -22,7 +22,7 @@
 	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"
 		destroy-method="close">
 		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
-		<property name="url" value="jdbc:mysql://192.168.0.6:3306/acne?autoReconnect=true&amp;useUnicode=true&amp;characterEncoding=utf8&amp;useSSL=false" />
+		<property name="url" value="jdbc:mysql://10.75.189.108:3306/acne?autoReconnect=true&amp;useUnicode=true&amp;characterEncoding=utf8&amp;useSSL=false" />
 		<property name="username" value="cisco" />
 		<property name="password" value="cisco" />
 		<!-- 初始化连接大小 -->
@@ -60,7 +60,7 @@
 	<!-- 真正可以产生Connection的ConnectionFactory，由对应的 JMS服务厂商提供 -->
 	<!-- 如果连接网络：tcp://ip:61616；未连接网络：tcp://localhost:61616 以及用户名，密码 -->
 	<amq:connectionFactory id="amqConnectionFactory"
-		brokerURL="tcp://192.168.0.6:61616" />
+		brokerURL="tcp://10.75.189.108:61616" />
 
 	<!-- Spring Caching连接工厂 -->
 	<!-- Spring用于管理真正的ConnectionFactory的ConnectionFactory -->

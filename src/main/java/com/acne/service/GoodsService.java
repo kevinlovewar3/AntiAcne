@@ -16,5 +16,7 @@ public interface GoodsService {
 	GoodsWithBLOBs queryGoodsByGoodsId(Long goodsId);
 
 	void addGoods(Long antiUserId, GoodsWithBLOBs goodsWithBLOBs);
+	
+	void deleteGoods(Long goodsId);
 
 }

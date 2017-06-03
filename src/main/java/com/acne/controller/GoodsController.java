@@ -179,6 +179,15 @@ public class GoodsController {
 		JSONArray array = new JSONArray(goodsWithBLOBs);
 		return array.toString();
 	}
+	
+	@RequestMapping(value = "delete/goods", method = RequestMethod.GET)
+	@ResponseBody
+	public String deleteGoods(HttpServletRequest request, HttpServletResponse response){
+		String goodsIdStr = request.getParameter("goodsId");
+		goodsService.deleteGoods(StringUtil.StringToLong(goodsIdStr));
+		return "{\"message\":\"success\"}";
+	}
+	
 
 	/**
 	 * 产品详情页面
