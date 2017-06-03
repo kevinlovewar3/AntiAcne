@@ -108,13 +108,6 @@
 		<constructor-arg ref="commentDestination"></constructor-arg>
 	</bean>
 	
-	<!--这个是队列目的地，点对点的 -->
-	<bean id="queueDestination" class="org.apache.activemq.command.ActiveMQQueue">
-		<constructor-arg>
-			<value>queue</value>
-		</constructor-arg>
-	</bean>
-	
 	<!-- 消息监听容器 -->
 	<bean id="jmsContainer"
 		class="org.springframework.jms.listener.DefaultMessageListenerContainer">
@@ -135,12 +128,5 @@
 		<property name="sessionAcknowledgeMode" value="2"></property>
 	</bean>
 -->
-	<!-- 消息监听容器 -->
-	<bean id="jmsContainer"
-		class="org.springframework.jms.listener.DefaultMessageListenerContainer">
-		<property name="connectionFactory" ref="connectionFactory" />
-		<property name="destination" ref="queueDestination" />
-		<property name="messageListener" ref="consumer" />
-	</bean>
 
 </beans>
